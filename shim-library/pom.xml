@@ -24,7 +24,7 @@
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.15</version>
+			<version>1.2.14</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
@@ -71,6 +71,17 @@
 
 	<build>
 		<plugins>
+			<!-- Compile -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.0.2</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+
 			<!-- Build javadocs for this project -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

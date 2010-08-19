@@ -24,6 +24,7 @@
 
 package org.freemedsoftware.device.impl;
 
+import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.beans.Beans;
 import java.io.ByteArrayOutputStream;
@@ -38,6 +39,8 @@ import javax.imageio.ImageIO;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.freemedsoftware.device.DeviceCapability;
+import org.freemedsoftware.device.JobStoreItem;
+import org.freemedsoftware.device.PersistentJobStoreDAO;
 import org.freemedsoftware.device.ShimDevice;
 import org.freemedsoftware.device.SignatureInterface;
 
@@ -54,6 +57,8 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 	protected SigPlus sigObj = null;
 
 	protected String currentJobId = null;
+
+	protected JobStoreItem job = null;
 
 	/**
 	 * Amount of time in milliseconds to wait between signature polling.
@@ -72,6 +77,11 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 
 	protected final static int SIGNATURE_MINIMUM_POINTS = 10;
 
+	/**
+	 * Number of milliseconds to display signature confirmation message.
+	 */
+	protected final static int DISPLAY_SIGNATURE_CONFIRMATION = 7000;
+
 	protected static Timer timer = new Timer();
 
 	protected static AtomicLong lastSeen = new AtomicLong();
@@ -79,6 +89,85 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 	protected static long requestTime = 0L;
 
 	protected static int numSigPoints = 0;
+
+	protected static String LCD_FONT_TYPEFACE = Font.SERIF;
+
+	protected static String SIGNATURE_CONFIRMATION_MESSAGE = "Your signature has been recorded.";
+
+	protected static Font tabletFont = Font.getFont(LCD_FONT_TYPEFACE);
+
+	protected class LcdWriteDestination {
+		/**
+		 * 0 = Foreground
+		 */
+		public final static int FOREGROUND = 0;
+		/**
+		 * 1 = Background memory in tablet
+		 */
+		public final static int BACKGROUND_MEMORY = 1;
+	}
+
+	protected class LcdCaptureMode {
+		/**
+		 * Mode 0 no LCD commands are sent to the tablet
+		 */
+		public final static int NO_LCD = 0;
+		/**
+		 * Mode 1 - sets capture mode to be active with Autoerase in the tablet
+		 */
+		public final static int ENABLED_AUTOERASE = 1;
+		/**
+		 * Mode 2 - sets the tablet to persistent ink capture without autoerase
+		 */
+		public final static int ENABLED = 2;
+		/**
+		 * Mode 3 - signature ink is displayed inverted on a suitable dark
+		 * background set using the Graphic functions.
+		 */
+		public final static int ENABLED_INVERTED = 3;
+	}
+
+	protected class LcdWriteMode {
+		/**
+		 * Mode 0 - Clear: The Display is cleared at the specified location.
+		 */
+		public final static int CLEAR = 0;
+		/**
+		 * Mode 1 - Complement: The Display is complemented at the specified
+		 * location.
+		 */
+		public final static int COMPLEMENT = 1;
+		/**
+		 * Mode 2 - WriteOpaque: The contents of the background memory in the
+		 * tablet are transferred to the LCD display, overwriting the contents
+		 * of the LCD display.
+		 */
+		public final static int WRITE_OPAQUE = 2;
+		/**
+		 * Mode 3 - WriteTransparent: The contents of the background memory in
+		 * the tablet are combined with and transferred to the visible LCD
+		 * memory
+		 */
+		public final static int WRITE_TRANSPARENT = 3;
+	}
+
+	protected class TopazTimerSignatureClearDisplayTask extends TimerTask {
+		@Override
+		public void run() {
+			// Only do this if there's no current job id running
+			if (currentJobId == null) {
+				log.info("Clearing display.");
+				sigObj.lcdRefresh(0, 0, 0, 640, 480);
+				sigObj.setLCDCaptureMode(LcdCaptureMode.NO_LCD);
+				sigObj.setEnabled(false);
+				sigObj.setTabletState(0);
+				sigObj.clearTablet();
+			} else {
+				log.warn("Attempted to clear LCD but job id of " + currentJobId
+						+ " is present");
+			}
+		}
+	}
 
 	protected class TopazTimerTask extends TimerTask {
 
@@ -155,8 +244,28 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 			sigObj.setTabletState(0);
 			sigObj.clearTablet();
 
-			log.info("Cancelling timer.");
-			timer.cancel();
+			// Just cancel timer task, otherwise the <Timer> object isn't
+			// reusable.
+			log.info("Cancelling timer task.");
+			cancel();
+
+			// Attempt to display confirmation message
+			try {
+				log.info("Attempting to display confirmation message.");
+				sigObj.setTabletState(1);
+
+				sigObj.setLCDCaptureMode(LcdCaptureMode.ENABLED);
+				sigObj.lcdWriteString(LcdWriteDestination.FOREGROUND,
+						LcdWriteMode.WRITE_OPAQUE, 0, 0,
+						SIGNATURE_CONFIRMATION_MESSAGE, tabletFont);
+			} catch (Throwable t) {
+				log.warn("Failed to properly write confirmation message", t);
+				sigObj.setTabletState(0);
+			}
+
+			// Clear the LCD after certain number of ms.
+			timer.schedule(new TopazTimerSignatureClearDisplayTask(),
+					DISPLAY_SIGNATURE_CONFIRMATION);
 		}
 	}
 
@@ -174,7 +283,8 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 		sigObj.clearTablet();
 
 		// TODO: FIXME: Need to pull from actual configuration
-		sigObj.setTabletModel("SignatureGem4X5");
+		// sigObj.setTabletModel("SignatureGem4X5");
+		sigObj.setTabletModel("SignatureGemLCD1X5");
 		sigObj.setTabletComPort("HID1"); // HID1 == "HSB" tablet HID port
 
 		// Attach event listener
@@ -199,6 +309,20 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 		if (currentJobId != null) {
 			log.error("Job in progress already for pad.");
 			return false;
+		} else {
+			log.info("Setting current jobId to " + uid);
+			currentJobId = uid;
+		}
+
+		log.debug("Populating local jobStoreItem instance.");
+		job = null;
+		if (uid.contains("TEST") || uid.equals("0")) {
+			job = new JobStoreItem();
+			job.setId(0);
+			job.setDisplayText("Patient: Rufus T Firefly");
+			job.setStatus("PENDING");
+		} else {
+			job = PersistentJobStoreDAO.get(Integer.parseInt(uid));
 		}
 
 		// Record the request time
@@ -223,9 +347,17 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 
 		// Attempt to readjust LCD on models which support it
 		try {
+			log.info("X size = " + sigObj.getTabletLCDXSize() + ", Y size = "
+					+ sigObj.getTabletLCDYSize());
 			sigObj.lcdRefresh(0, 0, 0, 640, 480);
-			sigObj.setLCDCaptureMode(2);
-			// sigObj.lcdWriteString(...);
+			sigObj.setLCDCaptureMode(LcdCaptureMode.ENABLED);
+			sigObj.lcdWriteString(LcdWriteDestination.FOREGROUND,
+					LcdWriteMode.WRITE_OPAQUE, 0, 0, "Please sign below",
+					tabletFont);
+			sigObj.lcdWriteString(LcdWriteDestination.FOREGROUND,
+					LcdWriteMode.WRITE_OPAQUE, 0,
+					sigObj.getTabletLCDYSize() - 20, job.getDisplayText(),
+					tabletFont);
 		} catch (Exception ex) {
 			log.info("LCD adjustment failed with " + ex.toString());
 		}
@@ -259,42 +391,60 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 		// Attempt to readjust LCD on models which support it
 		try {
 			sigObj.lcdRefresh(0, 0, 0, 640, 480);
-			sigObj.setLCDCaptureMode(2);
+			sigObj.setLCDCaptureMode(LcdCaptureMode.ENABLED_AUTOERASE);
 		} catch (Exception ex) {
 			log.info("LCD adjustment failed with " + ex.toString());
 		}
 
 		TopazSigCapData sigData = sigObj.getSignatureData();
-		log.trace(sigData.m_byRawData);
+		log.debug(sigData.m_byRawData);
+		job.setSignatureRaw(sigData.m_byRawData.getBytes());
 
 		// TODO: store data
 		log.info("Storing data.");
 
 		// Create PNG image
-		sigObj.setImageJustifyMode(5);
-		sigObj.setImagePenWidth(10);
-		sigObj.setImageXSize(1000);
-		sigObj.setImageYSize(350);
-		BufferedImage sigImage = sigObj.sigImage();
-		int w = sigImage.getWidth(null);
-		int h = sigImage.getHeight(null);
-		int[] pixels = new int[(w * h) * 2];
-		sigImage.setRGB(0, 0, 0, 0, pixels, 0, 0);
-		ByteArrayOutputStream fos = new ByteArrayOutputStream();
 		try {
-			ImageIO.write(sigImage, "png", fos);
-		} catch (IOException ex) {
-			log.error(ex);
-		}
-		try {
-			fos.close();
-		} catch (IOException ex) {
-			log.error(ex);
+			sigObj.setImageJustifyMode(5);
+			sigObj.setImagePenWidth(10);
+			BufferedImage sigImage = sigObj.sigImage();
+			int w = sigImage.getWidth(null);
+			int h = sigImage.getHeight(null);
+			int[] pixels = new int[(w * h) * 2];
+			sigImage.setRGB(0, 0, 0, 0, pixels, 0, 0);
+			ByteArrayOutputStream fos = new ByteArrayOutputStream();
+			try {
+				ImageIO.write(sigImage, "png", fos);
+			} catch (IOException ex) {
+				log.error(ex);
+			}
+			try {
+				fos.close();
+			} catch (IOException ex) {
+				log.error(ex);
+			}
+			log.debug("Populating signature image in job item.");
+			job.setSignatureImage(fos.toByteArray());
+		} catch (Throwable t) {
+			log.error(t);
 		}
 
 		// Disable tablet capture mode
 		sigObj.setTabletState(0);
 
+		log.info("Recording job status");
+		job.setStatus(JobStoreItem.STATUS_COMPLETED);
+		if (job.getId() != 0) {
+			log.info("Writing to persistent job store");
+			try {
+				PersistentJobStoreDAO.update(job);
+			} catch (Exception e) {
+				log.error("Failed to write", e);
+			}
+		} else {
+			log
+					.info("Skipping persistent job store write, as this is a test case.");
+		}
 	}
 
 	public void handleTabletTimerEvent(SigPlusEvent0 event) {
@@ -312,7 +462,7 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 		System.out.println("Initializing shim driver");
 		s.init();
 		System.out.println("Initializing signature request for pad");
-		s.initSignatureRequest("12345");
+		s.initSignatureRequest("TEST");
 	}
 
 }

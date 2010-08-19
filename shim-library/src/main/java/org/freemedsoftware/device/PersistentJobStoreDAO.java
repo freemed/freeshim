@@ -40,8 +40,8 @@ public class PersistentJobStoreDAO {
 
 	private static final String JOB_STORE_CREATE_SQL = "CREATE TABLE "
 			+ TABLE_NAME + " ( " + " id INTEGER NOT NULL PRIMARY KEY"
-			+ " , status TEXT NOT NULL " + " , sigraw BLOB "
-			+ " , sigimage BLOB " + " ) ; ";
+			+ " , status TEXT NOT NULL " + " , displayText TEXT "
+			+ " , sigraw BLOB " + " , sigimage BLOB " + " ) ; ";
 
 	protected void create(String fileName) throws SqlJetException {
 		File dbFile = new File(fileName);
@@ -89,11 +89,12 @@ public class PersistentJobStoreDAO {
 			JobStoreItem item = new JobStoreItem();
 			item.setId(id);
 			item.setStatus(cursor.getString("status"));
+			item.setDisplayText(cursor.getString("displayText"));
 			item.setSignatureRaw(cursor.getBlobAsArray("sigraw"));
 			item.setSignatureImage(cursor.getBlobAsArray("sigimage"));
-			
+
 			cursor.close();
-			
+
 			return item;
 		} finally {
 			db.commit();
@@ -104,8 +105,8 @@ public class PersistentJobStoreDAO {
 		db.beginTransaction(SqlJetTransactionMode.WRITE);
 		try {
 			ISqlJetTable table = db.getTable(TABLE_NAME);
-			table.insert(i.getId(), i.getStatus(), i.getSignatureRaw(), i
-					.getSignatureImage());
+			table.insert(i.getId(), i.getStatus(), i.getDisplayText(), i
+					.getSignatureRaw(), i.getSignatureImage());
 		} finally {
 			db.commit();
 		}
@@ -120,7 +121,8 @@ public class PersistentJobStoreDAO {
 					new Object[] { i.getId() });
 			do {
 				updateCursor.update(i.getId(), i.getStatus(), i
-						.getSignatureRaw(), i.getSignatureImage());
+						.getDisplayText(), i.getSignatureRaw(), i
+						.getSignatureImage());
 			} while (updateCursor.next());
 			updateCursor.close();
 		} finally {

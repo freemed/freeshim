@@ -26,12 +26,18 @@ package org.freemedsoftware.device;
 
 public class JobStoreItem {
 
+	public final static String STATUS_COMPLETED = "COMPLETE";
+	public final static String STATUS_ERROR = "ERROR";
+	public final static String STATUS_PENDING = "PENDING";
+
 	private Integer id;
 
 	private String status;
-	
+
+	private String displayText;
+
 	private byte[] signatureRaw;
-	
+
 	private byte[] signatureImage;
 
 	public void setId(Integer id) {
@@ -48,6 +54,14 @@ public class JobStoreItem {
 
 	public String getStatus() {
 		return status;
+	}
+
+	public void setDisplayText(String displayText) {
+		this.displayText = displayText;
+	}
+
+	public String getDisplayText() {
+		return displayText;
 	}
 
 	public void setSignatureRaw(byte[] signatureRaw) {

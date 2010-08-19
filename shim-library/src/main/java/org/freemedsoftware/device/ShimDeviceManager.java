@@ -24,15 +24,11 @@
 
 package org.freemedsoftware.device;
 
-import static java.util.Arrays.asList;
-
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.reflections.Reflections;
-import org.reflections.scanners.ConvertersScanner;
-import org.reflections.scanners.FieldAnnotationsScanner;
-import org.reflections.scanners.MethodAnnotationsScanner;
+import org.reflections.scanners.ResourcesScanner;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
@@ -61,18 +57,31 @@ public class ShimDeviceManager<T extends DeviceInterface> {
 
 	public void scanShimDevices() {
 		Predicate<String> filter = new FilterBuilder()
-				.include("org.freemedsoftware.device.ShimDevice\\$.*");
+				.include("org.freemedsoftware.device.impl.*");
 
 		Reflections r = new Reflections(
-				new ConfigurationBuilder().filterInputsBy(filter).setScanners(
-						new SubTypesScanner().filterResultsBy(filter),
-						new TypeAnnotationsScanner().filterResultsBy(filter),
-						new FieldAnnotationsScanner().filterResultsBy(filter),
-						new MethodAnnotationsScanner().filterResultsBy(filter),
-						new ConvertersScanner().filterResultsBy(filter))
+				new ConfigurationBuilder()
+						.filterInputsBy(
+								new FilterBuilder.Include(FilterBuilder
+										.prefix("org.freemedsoftware.device")))
 						.setUrls(
-								asList(ClasspathHelper
-										.getUrlForClass(ShimDevice.class))));
+								ClasspathHelper
+										.getUrlsForPackagePrefix("org.freemedsoftware.device"))
+						.setScanners(
+								new SubTypesScanner(),
+								new TypeAnnotationsScanner(),
+								new ResourcesScanner()));
+		/*
+		 * Reflections r = new Reflections( new ConfigurationBuilder()
+		 * .filterInputsBy(filter) .setScanners( new
+		 * SubTypesScanner().filterResultsBy(filter), new
+		 * TypeAnnotationsScanner() .filterResultsBy(filter), new
+		 * FieldAnnotationsScanner() .filterResultsBy(filter), new
+		 * MethodAnnotationsScanner() .filterResultsBy(filter), new
+		 * ConvertersScanner().filterResultsBy(filter)) .setUrls(
+		 * ClasspathHelper
+		 * .getUrlsForPackagePrefix("org.freemedsoftware.device.impl")));
+		 */
 		Set<Class<?>> s = r.getTypesAnnotatedWith(ShimDevice.class);
 		System.out.println("scanShimDevices found " + s.size() + " entries");
 		for (Class<?> c : s) {

@@ -24,14 +24,46 @@
 
 package org.freemedsoftware.device;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+public class JobStoreItem {
 
-@Retention(RetentionPolicy.RUNTIME)
-public @interface ShimDevice {
+	private Integer id;
 
-	String name();
+	private String status;
+	
+	private byte[] signatureRaw;
+	
+	private byte[] signatureImage;
 
-	DeviceCapability capability();
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setSignatureRaw(byte[] signatureRaw) {
+		this.signatureRaw = signatureRaw;
+	}
+
+	public byte[] getSignatureRaw() {
+		return signatureRaw;
+	}
+
+	public void setSignatureImage(byte[] signatureImage) {
+		this.signatureImage = signatureImage;
+	}
+
+	public byte[] getSignatureImage() {
+		return signatureImage;
+	}
 
 }

@@ -94,6 +94,8 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 
 	protected static String SIGNATURE_CONFIRMATION_MESSAGE = "Your signature has been recorded.";
 
+	protected static String SIGNATURE_NONE_MESSAGE = "No signature has been given!";
+
 	protected static Font tabletFont = Font.getFont(LCD_FONT_TYPEFACE);
 
 	protected class LcdWriteDestination {
@@ -195,6 +197,7 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 					// Clear everything
 					log.info("Clearing signature job id");
 					currentJobId = null;
+					job = null;
 					lastSeen.set(0L);
 					log.info("Clearing tablet.");
 					sigObj.setEnabled(false);
@@ -202,7 +205,14 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 					sigObj.clearTablet();
 
 					log.info("Cancelling timer.");
-					timer.cancel();
+					cancel();
+
+					writeTabletMessage(0, 0, SIGNATURE_NONE_MESSAGE);
+
+					// Clear the LCD after certain number of ms.
+					timer.schedule(new TopazTimerSignatureClearDisplayTask(),
+							DISPLAY_SIGNATURE_CONFIRMATION);
+
 				}
 			}
 
@@ -249,19 +259,7 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 			log.info("Cancelling timer task.");
 			cancel();
 
-			// Attempt to display confirmation message
-			try {
-				log.info("Attempting to display confirmation message.");
-				sigObj.setTabletState(1);
-
-				sigObj.setLCDCaptureMode(LcdCaptureMode.ENABLED);
-				sigObj.lcdWriteString(LcdWriteDestination.FOREGROUND,
-						LcdWriteMode.WRITE_OPAQUE, 0, 0,
-						SIGNATURE_CONFIRMATION_MESSAGE, tabletFont);
-			} catch (Throwable t) {
-				log.warn("Failed to properly write confirmation message", t);
-				sigObj.setTabletState(0);
-			}
+			writeTabletMessage(0, 0, SIGNATURE_CONFIRMATION_MESSAGE);
 
 			// Clear the LCD after certain number of ms.
 			timer.schedule(new TopazTimerSignatureClearDisplayTask(),
@@ -368,6 +366,21 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 				SIGNATURE_WAIT_DURATION);
 
 		return true;
+	}
+
+	protected void writeTabletMessage(int x, int y, String message) {
+		// Attempt to display confirmation message
+		try {
+			log.info("Attempting to display message.");
+			sigObj.setTabletState(1);
+
+			sigObj.setLCDCaptureMode(LcdCaptureMode.ENABLED);
+			sigObj.lcdWriteString(LcdWriteDestination.FOREGROUND,
+					LcdWriteMode.WRITE_OPAQUE, x, y, message, tabletFont);
+		} catch (Throwable t) {
+			log.warn("Failed to properly write message", t);
+			sigObj.setTabletState(0);
+		}
 	}
 
 	public void handleKeyPadData(SigPlusEvent0 event) {

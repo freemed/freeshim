@@ -29,7 +29,10 @@ import java.awt.image.BufferedImage;
 import java.beans.Beans;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicLong;
@@ -81,6 +84,8 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 	 * Number of milliseconds to display signature confirmation message.
 	 */
 	protected final static int DISPLAY_SIGNATURE_CONFIRMATION = 7000;
+
+	protected Map<String, Object> config = new HashMap<String, Object>();
 
 	protected static Timer timer = new Timer();
 
@@ -269,21 +274,28 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 
 	@Override
 	public void configure(HashMap<String, Object> config) {
+		log.info("Loading configuration");
+		this.config = config;
+	}
+
+	@Override
+	public List<String> getConfigurationOptions() {
+		return Arrays.asList(new String[] { "topaz.tabletModel",
+				"topaz.tabletPort" });
 	}
 
 	@Override
 	public void init() throws Exception {
-		// Load Topaz SigPlus driver on top of rxtx
+		// Load Topaz SigPlus driver on top of rxtx or HID driver
 		ClassLoader cl = (SigPlus.class).getClassLoader();
 		sigObj = (SigPlus) Beans.instantiate(cl, "com.topaz.sigplus.SigPlus");
 
 		// Clear all tablet configuration
 		sigObj.clearTablet();
 
-		// TODO: FIXME: Need to pull from actual configuration
-		// sigObj.setTabletModel("SignatureGem4X5");
-		sigObj.setTabletModel("SignatureGemLCD1X5");
-		sigObj.setTabletComPort("HID1"); // HID1 == "HSB" tablet HID port
+		// Pull from actual configuration
+		sigObj.setTabletModel((String) config.get("topaz.tabletModel"));
+		sigObj.setTabletComPort((String) config.get("topaz.tabletPort"));
 
 		// Attach event listener
 		sigObj.addSigPlusListener(this);
@@ -413,7 +425,7 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 		log.debug(sigData.m_byRawData);
 		job.setSignatureRaw(sigData.m_byRawData.getBytes());
 
-		// TODO: store data
+		// Store data in object
 		log.info("Storing data.");
 
 		// Create PNG image
@@ -472,6 +484,10 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 	public static void main(String[] args) throws Exception {
 		BasicConfigurator.configure();
 		SignatureTopazShim s = new SignatureTopazShim();
+		HashMap<String, Object> c = new HashMap<String, Object>();
+		c.put("topaz.tabletModel", "SignatureGemLCD1X5");
+		c.put("topaz.tabletPort", "HID1"); // HID1 == "HSB" tablet HID port
+		s.configure(c);
 		System.out.println("Initializing shim driver");
 		s.init();
 		System.out.println("Initializing signature request for pad");

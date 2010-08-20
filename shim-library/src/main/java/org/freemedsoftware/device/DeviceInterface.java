@@ -25,10 +25,13 @@
 package org.freemedsoftware.device;
 
 import java.util.HashMap;
+import java.util.List;
 
 public interface DeviceInterface {
 
 	public void configure(HashMap<String, Object> config);
+
+	public List<String> getConfigurationOptions();
 
 	public void init() throws Exception;
 

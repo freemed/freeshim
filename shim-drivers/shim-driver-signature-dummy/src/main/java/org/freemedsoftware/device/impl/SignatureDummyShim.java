@@ -25,6 +25,7 @@
 package org.freemedsoftware.device.impl;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.freemedsoftware.device.DeviceCapability;
@@ -54,6 +55,11 @@ public class SignatureDummyShim implements SignatureInterface {
 	@Override
 	public void configure(HashMap<String, Object> config) {
 		log.info("configure dummy sig device");
+	}
+
+	@Override
+	public List<String> getConfigurationOptions() {
+		return null;
 	}
 
 }

@@ -25,6 +25,7 @@
 package org.freemedsoftware.device.impl;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.freemedsoftware.device.DeviceCapability;
 import org.freemedsoftware.device.DeviceInterface;
@@ -46,6 +47,11 @@ public class DummyShim implements DeviceInterface {
 	@Override
 	public void init() throws Exception {
 
+	}
+
+	@Override
+	public List<String> getConfigurationOptions() {
+		return null;
 	}
 
 }

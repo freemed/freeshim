@@ -37,7 +37,7 @@ import org.reflections.util.FilterBuilder;
 
 import com.google.common.base.Predicate;
 
-public class ShimDeviceManager<T extends DeviceInterface> {
+public class ShimDeviceManager<T extends DeviceInterface> implements Runnable {
 
 	protected static Logger log = Logger.getLogger(ShimDeviceManager.class);
 
@@ -67,8 +67,7 @@ public class ShimDeviceManager<T extends DeviceInterface> {
 						.setUrls(
 								ClasspathHelper
 										.getUrlsForPackagePrefix("org.freemedsoftware.device"))
-						.setScanners(
-								new SubTypesScanner(),
+						.setScanners(new SubTypesScanner(),
 								new TypeAnnotationsScanner(),
 								new ResourcesScanner()));
 		/*
@@ -103,12 +102,19 @@ public class ShimDeviceManager<T extends DeviceInterface> {
 		}
 	}
 
+	/**
+	 * Get internal device driver instance.
+	 * 
+	 * @return
+	 */
+	public T getDeviceInstance() {
+		return deviceInstance;
+	}
+
 	protected void initSignatureDevice() throws Exception {
 		SignatureInterface sDevice = (SignatureInterface) deviceInstance;
 		sDevice.init();
-		persistentThread = new Thread() {
-
-		};
+		persistentThread = new Thread(this);
 	}
 
 	/**
@@ -123,6 +129,10 @@ public class ShimDeviceManager<T extends DeviceInterface> {
 		if (persistentThread != null) {
 			persistentThread.interrupt();
 		}
+	}
+
+	@Override
+	public void run() {
 	}
 
 }

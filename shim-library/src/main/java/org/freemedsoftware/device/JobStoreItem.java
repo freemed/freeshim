@@ -26,13 +26,34 @@ package org.freemedsoftware.device;
 
 public class JobStoreItem {
 
+	/**
+	 * Status for completed jobs.
+	 */
 	public final static String STATUS_COMPLETED = "COMPLETE";
+
+	/**
+	 * Status for jobs which have run but returned errors.
+	 */
 	public final static String STATUS_ERROR = "ERROR";
+
+	/**
+	 * Status for jobs which are currently being processed.
+	 */
 	public final static String STATUS_PENDING = "PENDING";
+
+	/**
+	 * Status for unassigned jobs.
+	 */
+	public final static String STATUS_NEW = "NEW";
+
+	public final static String DEVICE_SIGNATURE = "SIGNATURE";
+	public final static String DEVICE_VITALS = "VITALS";
 
 	private Integer id;
 
 	private String status;
+
+	private String device;
 
 	private String displayText;
 
@@ -46,6 +67,14 @@ public class JobStoreItem {
 
 	public Integer getId() {
 		return id;
+	}
+
+	public void setDevice(String device) {
+		this.device = device;
+	}
+
+	public String getDevice() {
+		return device;
 	}
 
 	public void setStatus(String status) {

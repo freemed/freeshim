@@ -24,6 +24,8 @@
 
 package org.freemedsoftware.shim;
 
+import java.util.List;
+
 import javax.jws.WebService;
 
 import org.freemedsoftware.shim.exception.DeviceNotAvailableException;
@@ -35,9 +37,12 @@ public interface ShimService {
 
 	public Integer getProtocolVersion();
 
-	public Integer requestSignature(String device)
+	public Integer requestSignature(String device, String displayInformation)
 			throws DeviceNotAvailableException;
 
-	public SignatureStatus getSignatureStatus(Integer requestId);
+	public SignatureStatus getSignatureStatus(Integer requestId)
+			throws Exception;
+
+	public List<ShimDeviceInformation> getDevices();
 
 }

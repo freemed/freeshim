@@ -54,4 +54,9 @@ public class DummyShim implements DeviceInterface {
 		return null;
 	}
 
+	@Override
+	public boolean isProcessing() {
+		return false;
+	}
+
 }

@@ -37,4 +37,6 @@ public interface DeviceInterface {
 
 	public void close() throws Exception;
 
+	public boolean isProcessing();
+
 }

@@ -59,7 +59,7 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 
 	protected SigPlus sigObj = null;
 
-	protected String currentJobId = null;
+	protected Integer currentJobId = null;
 
 	protected JobStoreItem job = null;
 
@@ -285,6 +285,11 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 	}
 
 	@Override
+	public boolean isProcessing() {
+		return (currentJobId == null);
+	}
+
+	@Override
 	public void init() throws Exception {
 		// Load Topaz SigPlus driver on top of rxtx or HID driver
 		ClassLoader cl = (SigPlus.class).getClassLoader();
@@ -314,25 +319,21 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 	}
 
 	@Override
-	public boolean initSignatureRequest(String uid) throws Exception {
+	public boolean initSignatureRequest(JobStoreItem item) throws Exception {
 		// If we're already processing a request, do not progress any further.
 		if (currentJobId != null) {
 			log.error("Job in progress already for pad.");
 			return false;
 		} else {
-			log.info("Setting current jobId to " + uid);
-			currentJobId = uid;
-		}
-
-		log.debug("Populating local jobStoreItem instance.");
-		job = null;
-		if (uid.contains("TEST") || uid.equals("0")) {
-			job = new JobStoreItem();
-			job.setId(0);
-			job.setDisplayText("Patient: Rufus T Firefly");
-			job.setStatus("PENDING");
-		} else {
-			job = PersistentJobStoreDAO.get(Integer.parseInt(uid));
+			if (item == null) {
+				job = new JobStoreItem();
+				job.setId(0);
+				job.setDisplayText("Patient: Rufus T Firefly");
+				job.setStatus("PENDING");
+			} else {
+				log.info("Setting current jobId to " + item.getId());
+				job = item;
+			}
 		}
 
 		// Record the request time
@@ -342,7 +343,7 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 		sigObj.clearTablet();
 
 		// Store uid locally
-		currentJobId = uid;
+		currentJobId = job.getId();
 
 		sigObj.setEnabled(true);
 		sigObj.autoKeyStart();
@@ -491,7 +492,7 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 		System.out.println("Initializing shim driver");
 		s.init();
 		System.out.println("Initializing signature request for pad");
-		s.initSignatureRequest("TEST");
+		s.initSignatureRequest(null);
 	}
 
 }

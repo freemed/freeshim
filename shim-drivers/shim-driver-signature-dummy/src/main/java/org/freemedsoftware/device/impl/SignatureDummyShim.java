@@ -29,6 +29,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.freemedsoftware.device.DeviceCapability;
+import org.freemedsoftware.device.JobStoreItem;
 import org.freemedsoftware.device.ShimDevice;
 import org.freemedsoftware.device.SignatureInterface;
 
@@ -43,7 +44,7 @@ public class SignatureDummyShim implements SignatureInterface {
 	}
 
 	@Override
-	public boolean initSignatureRequest(String uid) throws Exception {
+	public boolean initSignatureRequest(JobStoreItem item) throws Exception {
 		return false;
 	}
 
@@ -60,6 +61,11 @@ public class SignatureDummyShim implements SignatureInterface {
 	@Override
 	public List<String> getConfigurationOptions() {
 		return null;
+	}
+
+	@Override
+	public boolean isProcessing() {
+		return false;
 	}
 
 }

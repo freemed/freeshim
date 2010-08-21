@@ -25,13 +25,26 @@
 package org.freemedsoftware.shim;
 
 public enum SignatureStatus {
-	PENDING("PENDING"), COMPLETED("COMPLETED"), ABORTED("ABORTED"), FAILED(
-			"FAILED");
+	PENDING("PENDING"), COMPLETE("COMPLETE"), ERROR("ERROR"), NEW("NEW");
 
 	private String textual = null;
 
 	SignatureStatus(String textual) {
 		this.textual = textual;
+	}
+
+	public static SignatureStatus fromString(String textual) {
+		if (textual.equalsIgnoreCase("PENDING")) {
+			return SignatureStatus.PENDING;
+		} else if (textual.equalsIgnoreCase("COMPLETE")) {
+			return SignatureStatus.COMPLETE;
+		} else if (textual.equalsIgnoreCase("ERROR")) {
+			return SignatureStatus.ERROR;
+		} else if (textual.equalsIgnoreCase("NEW")) {
+			return SignatureStatus.NEW;
+		} else {
+			return null;
+		}
 	}
 
 	@Override

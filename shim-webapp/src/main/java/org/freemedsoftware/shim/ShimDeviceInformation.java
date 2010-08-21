@@ -22,24 +22,44 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-package org.freemedsoftware.device;
+package org.freemedsoftware.shim;
 
-/**
- * <DeviceInterface> child interface. All signature pad devices should implement
- * this interface.
- * 
- * @author jeff@freemedsoftware.org
- */
-public interface SignatureInterface extends DeviceInterface {
+import java.io.Serializable;
 
-	/**
-	 * Initialize request for a signature on a signature pad.
-	 * 
-	 * @param item
-	 *            <JobStoreItem> object for this signature job.
-	 * @return Success
-	 * @throws Exception
-	 */
-	public boolean initSignatureRequest(JobStoreItem item) throws Exception;
+import org.freemedsoftware.device.DeviceCapability;
+
+public class ShimDeviceInformation implements Serializable {
+
+	private static final long serialVersionUID = 7325861056406660405L;
+
+	private String deviceName;
+
+	private String deviceDriver;
+
+	private DeviceCapability deviceType;
+
+	public void setDeviceName(String deviceName) {
+		this.deviceName = deviceName;
+	}
+
+	public String getDeviceName() {
+		return deviceName;
+	}
+
+	public void setDeviceDriver(String deviceDriver) {
+		this.deviceDriver = deviceDriver;
+	}
+
+	public String getDeviceDriver() {
+		return deviceDriver;
+	}
+
+	public void setDeviceType(DeviceCapability deviceType) {
+		this.deviceType = deviceType;
+	}
+
+	public DeviceCapability getDeviceType() {
+		return deviceType;
+	}
 
 }

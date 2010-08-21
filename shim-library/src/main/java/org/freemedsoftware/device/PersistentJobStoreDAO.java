@@ -25,6 +25,8 @@
 package org.freemedsoftware.device;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.tmatesoft.sqljet.core.SqlJetException;
 import org.tmatesoft.sqljet.core.SqlJetTransactionMode;
@@ -40,10 +42,11 @@ public class PersistentJobStoreDAO {
 
 	private static final String JOB_STORE_CREATE_SQL = "CREATE TABLE "
 			+ TABLE_NAME + " ( " + " id INTEGER NOT NULL PRIMARY KEY"
-			+ " , status TEXT NOT NULL " + " , displayText TEXT "
-			+ " , sigraw BLOB " + " , sigimage BLOB " + " ) ; ";
+			+ " , device TEXT NOT NULL " + " , status TEXT NOT NULL "
+			+ " , displayText TEXT " + " , sigraw BLOB " + " , sigimage BLOB "
+			+ " ) ; ";
 
-	protected void create(String fileName) throws SqlJetException {
+	public static void create(String fileName) throws SqlJetException {
 		File dbFile = new File(fileName);
 		dbFile.delete();
 
@@ -65,68 +68,108 @@ public class PersistentJobStoreDAO {
 	}
 
 	public static void delete(Integer id) throws SqlJetException {
-		db.beginTransaction(SqlJetTransactionMode.WRITE);
-		try {
-			ISqlJetTable table = db.getTable(TABLE_NAME);
-			ISqlJetCursor deleteCursor = table.scope(table
-					.getPrimaryKeyIndexName(), new Object[] { id },
-					new Object[] { id });
-			while (!deleteCursor.eof()) {
-				deleteCursor.delete();
+		synchronized (db) {
+			db.beginTransaction(SqlJetTransactionMode.WRITE);
+			try {
+				ISqlJetTable table = db.getTable(TABLE_NAME);
+				ISqlJetCursor deleteCursor = table.scope(table
+						.getPrimaryKeyIndexName(), new Object[] { id },
+						new Object[] { id });
+				while (!deleteCursor.eof()) {
+					deleteCursor.delete();
+				}
+				deleteCursor.close();
+			} finally {
+				db.commit();
 			}
-			deleteCursor.close();
-		} finally {
-			db.commit();
 		}
 	}
 
 	public static JobStoreItem get(Integer id) throws SqlJetException {
-		db.beginTransaction(SqlJetTransactionMode.READ_ONLY);
-		try {
-			ISqlJetTable table = db.getTable(TABLE_NAME);
-			ISqlJetCursor cursor = table.lookup("id", id);
+		synchronized (db) {
+			db.beginTransaction(SqlJetTransactionMode.READ_ONLY);
+			try {
+				ISqlJetTable table = db.getTable(TABLE_NAME);
+				ISqlJetCursor cursor = table.lookup("id", id);
 
-			JobStoreItem item = new JobStoreItem();
-			item.setId(id);
-			item.setStatus(cursor.getString("status"));
-			item.setDisplayText(cursor.getString("displayText"));
-			item.setSignatureRaw(cursor.getBlobAsArray("sigraw"));
-			item.setSignatureImage(cursor.getBlobAsArray("sigimage"));
+				JobStoreItem item = new JobStoreItem();
+				item.setId(id);
+				item.setDevice(cursor.getString("device"));
+				item.setStatus(cursor.getString("status"));
+				item.setDisplayText(cursor.getString("displayText"));
+				item.setSignatureRaw(cursor.getBlobAsArray("sigraw"));
+				item.setSignatureImage(cursor.getBlobAsArray("sigimage"));
 
-			cursor.close();
+				cursor.close();
 
-			return item;
-		} finally {
-			db.commit();
+				return item;
+			} finally {
+				db.commit();
+			}
 		}
 	}
 
-	public static void insert(JobStoreItem i) throws SqlJetException {
-		db.beginTransaction(SqlJetTransactionMode.WRITE);
-		try {
-			ISqlJetTable table = db.getTable(TABLE_NAME);
-			table.insert(i.getId(), i.getStatus(), i.getDisplayText(), i
-					.getSignatureRaw(), i.getSignatureImage());
-		} finally {
-			db.commit();
+	public static List<JobStoreItem> unassignedJobs() throws SqlJetException {
+		synchronized (db) {
+			db.beginTransaction(SqlJetTransactionMode.READ_ONLY);
+			try {
+				ISqlJetTable table = db.getTable(TABLE_NAME);
+				ISqlJetCursor cursor = table.lookup("status",
+						JobStoreItem.STATUS_NEW);
+
+				List<JobStoreItem> items = new ArrayList<JobStoreItem>();
+
+				do {
+					JobStoreItem item = new JobStoreItem();
+					item.setId((int) cursor.getInteger("id"));
+					item.setDevice(cursor.getString("device"));
+					item.setStatus(cursor.getString("status"));
+					item.setDisplayText(cursor.getString("displayText"));
+					item.setSignatureRaw(cursor.getBlobAsArray("sigraw"));
+					item.setSignatureImage(cursor.getBlobAsArray("sigimage"));
+					items.add(item);
+				} while (cursor.next());
+
+				cursor.close();
+
+				return items;
+			} finally {
+				db.commit();
+			}
+		}
+	}
+
+	public static int insert(JobStoreItem i) throws SqlJetException {
+		synchronized (db) {
+			db.beginTransaction(SqlJetTransactionMode.WRITE);
+			try {
+				ISqlJetTable table = db.getTable(TABLE_NAME);
+				return (int) table.insert(i.getId(), i.getDevice(), i
+						.getStatus(), i.getDisplayText(), i.getSignatureRaw(),
+						i.getSignatureImage());
+			} finally {
+				db.commit();
+			}
 		}
 	}
 
 	public static void update(JobStoreItem i) throws SqlJetException {
-		db.beginTransaction(SqlJetTransactionMode.WRITE);
-		try {
-			ISqlJetTable table = db.getTable(TABLE_NAME);
-			ISqlJetCursor updateCursor = table.scope(table
-					.getPrimaryKeyIndexName(), new Object[] { i.getId() },
-					new Object[] { i.getId() });
-			do {
-				updateCursor.update(i.getId(), i.getStatus(), i
-						.getDisplayText(), i.getSignatureRaw(), i
-						.getSignatureImage());
-			} while (updateCursor.next());
-			updateCursor.close();
-		} finally {
-			db.commit();
+		synchronized (db) {
+			db.beginTransaction(SqlJetTransactionMode.WRITE);
+			try {
+				ISqlJetTable table = db.getTable(TABLE_NAME);
+				ISqlJetCursor updateCursor = table.scope(table
+						.getPrimaryKeyIndexName(), new Object[] { i.getId() },
+						new Object[] { i.getId() });
+				do {
+					updateCursor.update(i.getId(), i.getDevice(),
+							i.getStatus(), i.getDisplayText(), i
+									.getSignatureRaw(), i.getSignatureImage());
+				} while (updateCursor.next());
+				updateCursor.close();
+			} finally {
+				db.commit();
+			}
 		}
 	}
 

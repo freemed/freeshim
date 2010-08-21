@@ -36,7 +36,7 @@ import org.apache.log4j.Logger;
 
 public class Configuration {
 
-	public static String DEFAULT_CONFIG = "/WEB-INF/shim.properties";
+	public static String DEFAULT_CONFIG = "/WEB-INF/shim-default.properties";
 	public static String OVERRIDE_CONFIG = System.getProperty("properties");
 
 	protected static CompositeConfiguration compositeConfiguration = null;

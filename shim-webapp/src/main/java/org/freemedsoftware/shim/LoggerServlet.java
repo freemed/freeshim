@@ -49,6 +49,7 @@ public class LoggerServlet extends HttpServlet {
 		System.out.println(getClass().getCanonicalName() + " initializing");
 	}
 
+	@Override
 	public void init() throws ServletException {
 		System.out.println("LogggerServlet init() starting.");
 		String log4jfile = getInitParameter("log4j-properties");
@@ -73,6 +74,7 @@ public class LoggerServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
+	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 	}
@@ -81,6 +83,7 @@ public class LoggerServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
+	@Override
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 	}

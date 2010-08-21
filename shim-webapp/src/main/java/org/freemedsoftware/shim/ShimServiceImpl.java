@@ -24,6 +24,8 @@
 
 package org.freemedsoftware.shim;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.jws.WebParam;
 import javax.jws.WebService;
@@ -33,7 +35,12 @@ import javax.ws.rs.Produces;
 import javax.xml.ws.WebServiceContext;
 
 import org.apache.log4j.Logger;
+import org.freemedsoftware.device.JobStoreItem;
+import org.freemedsoftware.device.PersistentJobStoreDAO;
+import org.freemedsoftware.device.ShimDeviceManager;
+import org.freemedsoftware.device.SignatureInterface;
 import org.freemedsoftware.shim.exception.DeviceNotAvailableException;
+import org.tmatesoft.sqljet.core.SqlJetException;
 
 @WebService(endpointInterface = "org.freemedsoftware.shim.ShimService", serviceName = "Shim")
 public class ShimServiceImpl implements ShimService {
@@ -55,9 +62,22 @@ public class ShimServiceImpl implements ShimService {
 	@Path("requestsignature/{device}")
 	@Produces("application/json")
 	@Override
-	public Integer requestSignature(@WebParam(name = "device") String device)
+	public Integer requestSignature(@WebParam(name = "device") String device,
+			@WebParam(name = "displayInformation") String displayInformation)
 			throws DeviceNotAvailableException {
-		return null;
+		ShimDeviceManager<SignatureInterface> manager = MasterControlServlet
+				.getSignatureDeviceManager();
+		if (manager == null) {
+			throw new DeviceNotAvailableException();
+		}
+		JobStoreItem item = new JobStoreItem();
+		Integer itemId = 0;
+		try {
+			itemId = PersistentJobStoreDAO.insert(item);
+		} catch (SqlJetException e) {
+			log.error(e);
+		}
+		return itemId;
 	}
 
 	@GET
@@ -65,7 +85,16 @@ public class ShimServiceImpl implements ShimService {
 	@Produces("application/json")
 	@Override
 	public SignatureStatus getSignatureStatus(
-			@WebParam(name = "requestId") Integer requestId) {
+			@WebParam(name = "requestId") Integer requestId) throws Exception {
+		JobStoreItem item = PersistentJobStoreDAO.get(requestId);
+		return SignatureStatus.fromString(item.getStatus());
+	}
+
+	@GET
+	@Path("devices")
+	@Produces("application/json")
+	@Override
+	public List<ShimDeviceInformation> getDevices() {
 		return null;
 	}
 

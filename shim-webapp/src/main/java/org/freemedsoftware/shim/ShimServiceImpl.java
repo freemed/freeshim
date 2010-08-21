@@ -27,7 +27,6 @@ package org.freemedsoftware.shim;
 import java.util.List;
 
 import javax.annotation.Resource;
-import javax.jws.WebParam;
 import javax.jws.WebService;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -62,8 +61,7 @@ public class ShimServiceImpl implements ShimService {
 	@Path("requestsignature/{device}")
 	@Produces("application/json")
 	@Override
-	public Integer requestSignature(@WebParam(name = "device") String device,
-			@WebParam(name = "displayInformation") String displayInformation)
+	public Integer requestSignature(String device, String displayInformation)
 			throws DeviceNotAvailableException {
 		ShimDeviceManager<SignatureInterface> manager = MasterControlServlet
 				.getSignatureDeviceManager();
@@ -84,8 +82,8 @@ public class ShimServiceImpl implements ShimService {
 	@Path("signaturestatus/{requestId}")
 	@Produces("application/json")
 	@Override
-	public SignatureStatus getSignatureStatus(
-			@WebParam(name = "requestId") Integer requestId) throws Exception {
+	public SignatureStatus getSignatureStatus(Integer requestId)
+			throws Exception {
 		JobStoreItem item = PersistentJobStoreDAO.get(requestId);
 		return SignatureStatus.fromString(item.getStatus());
 	}

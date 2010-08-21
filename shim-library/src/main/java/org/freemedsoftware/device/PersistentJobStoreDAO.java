@@ -28,6 +28,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.tmatesoft.sqljet.core.SqlJetException;
 import org.tmatesoft.sqljet.core.SqlJetTransactionMode;
 import org.tmatesoft.sqljet.core.table.ISqlJetCursor;
@@ -35,6 +36,8 @@ import org.tmatesoft.sqljet.core.table.ISqlJetTable;
 import org.tmatesoft.sqljet.core.table.SqlJetDb;
 
 public class PersistentJobStoreDAO {
+
+	static final Logger log = Logger.getLogger(PersistentJobStoreDAO.class);
 
 	protected static SqlJetDb db = null;
 
@@ -46,6 +49,25 @@ public class PersistentJobStoreDAO {
 			+ " , displayText TEXT " + " , sigraw BLOB " + " , sigimage BLOB "
 			+ " ) ; ";
 
+	private static final String JOB_STORE_INDEX_ID_SQL = "CREATE INDEX id_index ON "
+			+ TABLE_NAME + "(id)";
+
+	private static final String JOB_STORE_INDEX_STATUS_SQL = "CREATE INDEX status_index ON "
+			+ TABLE_NAME + "(status)";
+
+	public static void open(String fileName) throws SqlJetException {
+		db = SqlJetDb.open(new File(fileName), true);
+		db.beginTransaction(SqlJetTransactionMode.WRITE);
+		try {
+			db.getOptions().setUserVersion(1);
+		} catch (Throwable t) {
+			log.error(t);
+			throw new SqlJetException(t);
+		} finally {
+			db.commit();
+		}
+	}
+
 	public static void create(String fileName) throws SqlJetException {
 		File dbFile = new File(fileName);
 		dbFile.delete();
@@ -55,6 +77,9 @@ public class PersistentJobStoreDAO {
 		db.beginTransaction(SqlJetTransactionMode.WRITE);
 		try {
 			db.getOptions().setUserVersion(1);
+		} catch (Throwable t) {
+			log.error(t);
+			throw new SqlJetException(t);
 		} finally {
 			db.commit();
 		}
@@ -62,6 +87,11 @@ public class PersistentJobStoreDAO {
 		db.beginTransaction(SqlJetTransactionMode.WRITE);
 		try {
 			db.createTable(JOB_STORE_CREATE_SQL);
+			db.createIndex(JOB_STORE_INDEX_ID_SQL);
+			db.createIndex(JOB_STORE_INDEX_STATUS_SQL);
+		} catch (Throwable t) {
+			log.error(t);
+			throw new SqlJetException(t);
 		} finally {
 			db.commit();
 		}
@@ -79,6 +109,9 @@ public class PersistentJobStoreDAO {
 					deleteCursor.delete();
 				}
 				deleteCursor.close();
+			} catch (Throwable t) {
+				log.error(t);
+				throw new SqlJetException(t);
 			} finally {
 				db.commit();
 			}
@@ -90,7 +123,7 @@ public class PersistentJobStoreDAO {
 			db.beginTransaction(SqlJetTransactionMode.READ_ONLY);
 			try {
 				ISqlJetTable table = db.getTable(TABLE_NAME);
-				ISqlJetCursor cursor = table.lookup("id", id);
+				ISqlJetCursor cursor = table.lookup("id_index", id);
 
 				JobStoreItem item = new JobStoreItem();
 				item.setId(id);
@@ -103,6 +136,9 @@ public class PersistentJobStoreDAO {
 				cursor.close();
 
 				return item;
+			} catch (Throwable t) {
+				log.error(t);
+				throw new SqlJetException(t);
 			} finally {
 				db.commit();
 			}
@@ -114,10 +150,13 @@ public class PersistentJobStoreDAO {
 			db.beginTransaction(SqlJetTransactionMode.READ_ONLY);
 			try {
 				ISqlJetTable table = db.getTable(TABLE_NAME);
-				ISqlJetCursor cursor = table.lookup("status",
+				ISqlJetCursor cursor = table.lookup("status_index",
 						JobStoreItem.STATUS_NEW);
 
 				List<JobStoreItem> items = new ArrayList<JobStoreItem>();
+				if (cursor.getRowCount() < 1) {
+					return items;
+				}
 
 				do {
 					JobStoreItem item = new JobStoreItem();
@@ -133,6 +172,9 @@ public class PersistentJobStoreDAO {
 				cursor.close();
 
 				return items;
+			} catch (Throwable t) {
+				log.debug(t);
+				throw new SqlJetException(t);
 			} finally {
 				db.commit();
 			}
@@ -147,6 +189,9 @@ public class PersistentJobStoreDAO {
 				return (int) table.insert(i.getId(), i.getDevice(), i
 						.getStatus(), i.getDisplayText(), i.getSignatureRaw(),
 						i.getSignatureImage());
+			} catch (Exception t) {
+				log.error(t);
+				throw new SqlJetException(t);
 			} finally {
 				db.commit();
 			}
@@ -167,6 +212,9 @@ public class PersistentJobStoreDAO {
 									.getSignatureRaw(), i.getSignatureImage());
 				} while (updateCursor.next());
 				updateCursor.close();
+			} catch (Throwable t) {
+				log.error(t);
+				throw new SqlJetException(t);
 			} finally {
 				db.commit();
 			}

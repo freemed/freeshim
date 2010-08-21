@@ -52,6 +52,9 @@ public class ShimDeviceManager<T extends DeviceInterface> implements Runnable {
 	@SuppressWarnings("unchecked")
 	public ShimDeviceManager(String className) throws InstantiationException,
 			IllegalAccessException, ClassNotFoundException {
+		if (className == null) {
+			throw new InstantiationException("no class name given");
+		}
 		deviceInstance = (T) Class.forName(className).newInstance();
 	}
 
@@ -112,7 +115,9 @@ public class ShimDeviceManager<T extends DeviceInterface> implements Runnable {
 	}
 
 	protected void initSignatureDevice() throws Exception {
+		log.info("initSignatureDevice()");
 		SignatureInterface sDevice = (SignatureInterface) deviceInstance;
+		log.info("Running device init");
 		sDevice.init();
 		persistentThread = new Thread(this);
 	}

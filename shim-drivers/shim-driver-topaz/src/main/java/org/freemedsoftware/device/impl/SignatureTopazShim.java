@@ -292,15 +292,22 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 	@Override
 	public void init() throws Exception {
 		// Load Topaz SigPlus driver on top of rxtx or HID driver
+		log.debug("init()");
 		ClassLoader cl = (SigPlus.class).getClassLoader();
+		log.debug("Instantiating Topaz SigPlus driver");
 		sigObj = (SigPlus) Beans.instantiate(cl, "com.topaz.sigplus.SigPlus");
 
 		// Clear all tablet configuration
 		sigObj.clearTablet();
 
 		// Pull from actual configuration
-		sigObj.setTabletModel((String) config.get("topaz.tabletModel"));
-		sigObj.setTabletComPort((String) config.get("topaz.tabletPort"));
+		try {
+			sigObj.setTabletModel((String) config.get("topaz.tabletModel"));
+			sigObj.setTabletComPort((String) config.get("topaz.tabletPort"));
+		} catch (Exception ex) {
+			log.error(ex);
+			throw ex;
+		}
 
 		// Attach event listener
 		sigObj.addSigPlusListener(this);

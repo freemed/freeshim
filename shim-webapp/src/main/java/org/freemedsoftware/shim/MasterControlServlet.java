@@ -25,6 +25,7 @@
 package org.freemedsoftware.shim;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
@@ -59,6 +60,9 @@ public class MasterControlServlet extends HttpServlet {
 		logger.info("MasterControlServlet initializing");
 
 		logger.info("Loading configuration");
+		Configuration.setServletContext(this);
+		Configuration.loadConfiguration();
+
 		config = Configuration.getConfiguration();
 
 		String jobstoreLocation = config.getString("jobstore.location");
@@ -67,7 +71,15 @@ public class MasterControlServlet extends HttpServlet {
 				+ jobstoreLocation);
 		if (new File(jobstoreLocation).exists()) {
 			logger.info("Found existing job store, no need to initialize");
+			try {
+				PersistentJobStoreDAO.open(jobstoreLocation);
+			} catch (SqlJetException e) {
+				throw new ServletException(
+						"Unable to open persistent job store");
+			}
 		} else {
+			logger.info("Attempting to create new job store at "
+					+ jobstoreLocation);
 			try {
 				PersistentJobStoreDAO.create(jobstoreLocation);
 			} catch (SqlJetException ex) {
@@ -81,15 +93,29 @@ public class MasterControlServlet extends HttpServlet {
 		logger.info("MasterControlServlet init finished");
 	}
 
+	@SuppressWarnings("unchecked")
 	public void launchWorkerThreads() {
 		logger.info("Launching worker threads");
+
+		HashMap<String, Object> driverConfig = new HashMap<String, Object>();
+		Iterator<String> configKeys = config.getKeys();
+		while (configKeys.hasNext()) {
+			String k = configKeys.next();
+			driverConfig.put(k, config.getString(k));
+		}
 
 		String signatureDriver = config.getString("driver.signature");
 		if (signatureDriver != null) {
 			logger.info("Initializing signature pad driver " + signatureDriver);
 			try {
+				logger.debug("instantiating driver");
 				sManager = new ShimDeviceManager<SignatureInterface>(
 						signatureDriver);
+				sManager.getDeviceInstance().configure(driverConfig);
+				logger.debug("running init() for driver");
+				if (sManager == null) {
+					logger.error("Signature manager is null!!");
+				}
 				sManager.init();
 			} catch (Exception e) {
 				logger.error(e);

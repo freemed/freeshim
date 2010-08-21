@@ -26,7 +26,9 @@ package org.freemedsoftware.shim;
 
 import java.util.List;
 
+import javax.jws.WebParam;
 import javax.jws.WebService;
+import javax.ws.rs.PathParam;
 
 import org.freemedsoftware.shim.exception.DeviceNotAvailableException;
 
@@ -37,10 +39,13 @@ public interface ShimService {
 
 	public Integer getProtocolVersion();
 
-	public Integer requestSignature(String device, String displayInformation)
+	public Integer requestSignature(
+			@PathParam("device") @WebParam(name = "device") String device,
+			@PathParam("displayInformation") @WebParam(name = "displayInformation") String displayInformation)
 			throws DeviceNotAvailableException;
 
-	public SignatureStatus getSignatureStatus(Integer requestId)
+	public SignatureStatus getSignatureStatus(
+			@PathParam("requestId") @WebParam(name = "requestId") Integer requestId)
 			throws Exception;
 
 	public List<ShimDeviceInformation> getDevices();

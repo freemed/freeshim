@@ -6,7 +6,7 @@
 	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	id="WebApp_ID" version="2.5">
-	<display-name>dosingstation</display-name>
+	<display-name>shim</display-name>
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 		<welcome-file>index.htm</welcome-file>
@@ -36,15 +36,17 @@
 
 	<!-- Control servlet -->
 
-	<!--
-		<servlet> <description>Servlet to handle init/shutdown
-		operations</description> <display-name>MasterControl</display-name>
+	<servlet>
+		<description>Servlet to handle init/shutdown operations</description>
+		<display-name>MasterControl</display-name>
 		<servlet-name>MasterControl</servlet-name>
-		<servlet-class>org.freemedsoftware.shim.MasterControl</servlet-class>
-		<load-on-startup>1</load-on-startup> </servlet> <servlet-mapping>
+		<servlet-class>org.freemedsoftware.shim.MasterControlServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
 		<servlet-name>MasterControl</servlet-name>
-		<url-pattern>/MasterControl</url-pattern> </servlet-mapping>
-	-->
+		<url-pattern>/MasterControl</url-pattern>
+	</servlet-mapping>
 
 	<!-- Web services -->
 

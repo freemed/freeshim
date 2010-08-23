@@ -1,0 +1,15 @@
+$Id$
+
+SHIM webapp component. This is a J2EE web application with CXF-based
+SOAP/REST services. The WSDL is available at
+
+	http://host:port/shim/services/ShimService?wsdl
+
+(with the appropriate values of "host" and "port" used, of course. It
+uses an internal job store queueing system which is by default stored in
+${catalina.home}/work/jobstore.db but can be overridden by the properties
+"overrides" file, which can be specified by defining the "properties"
+property like this:
+
+	-Dproperties=/path/to/the/config/shim.properties
+

@@ -286,7 +286,7 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 
 	@Override
 	public boolean isProcessing() {
-		return (currentJobId == null);
+		return (currentJobId != null);
 	}
 
 	@Override
@@ -318,6 +318,10 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 
 	@Override
 	public void close() throws Exception {
+		if (timer != null) {
+			log.info("Cancelling timer");
+			timer.cancel();
+		}
 		if (sigObj != null) {
 			sigObj.setEnabled(false);
 			sigObj.setTabletState(0);

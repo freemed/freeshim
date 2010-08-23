@@ -198,11 +198,16 @@ public class MasterControlServlet extends HttpServlet {
 	@Override
 	public void destroy() {
 		if (sManager != null) {
+			logger.info("Closing signature manager");
 			try {
 				sManager.close();
 			} catch (Exception e) {
 				logger.warn(e);
 			}
+		}
+		if (timer != null) {
+			logger.info("Cancelling timer instance");
+			timer.cancel();
 		}
 		super.destroy();
 	}

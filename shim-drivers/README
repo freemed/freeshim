@@ -1,0 +1,5 @@
+$Id$
+
+All third party drivers for SHIM devices should go in here. The API is
+defined in the shim-library codebase.
+

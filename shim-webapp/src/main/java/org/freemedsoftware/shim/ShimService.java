@@ -40,7 +40,6 @@ public interface ShimService {
 	public Integer getProtocolVersion();
 
 	public Integer requestSignature(
-			@PathParam("device") @WebParam(name = "device") String device,
 			@PathParam("displayInformation") @WebParam(name = "displayInformation") String displayInformation)
 			throws DeviceNotAvailableException;
 

@@ -61,7 +61,7 @@ public class ShimServiceImpl implements ShimService {
 	@Path("requestsignature/{device}")
 	@Produces("application/json")
 	@Override
-	public Integer requestSignature(String device, String displayInformation)
+	public Integer requestSignature(String displayInformation)
 			throws DeviceNotAvailableException {
 		ShimDeviceManager<SignatureInterface> manager = MasterControlServlet
 				.getSignatureDeviceManager();
@@ -70,10 +70,14 @@ public class ShimServiceImpl implements ShimService {
 		}
 		JobStoreItem item = new JobStoreItem();
 		Integer itemId = 0;
+		item.setStatus(JobStoreItem.STATUS_NEW);
+		item.setDevice(JobStoreItem.DEVICE_SIGNATURE);
+		item.setDisplayText(displayInformation);
 		try {
 			itemId = PersistentJobStoreDAO.insert(item);
 		} catch (SqlJetException e) {
 			log.error(e);
+			throw new DeviceNotAvailableException();
 		}
 		return itemId;
 	}

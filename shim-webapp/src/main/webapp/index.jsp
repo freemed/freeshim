@@ -26,6 +26,18 @@
 <title>FreeSHIM</title>
 </head>
 <body>
-<h2>FreeSHIM</h2>
+
+<!-- Header -->
+
+<table border="0" cellpadding="5" width="100%">
+	<tr>
+		<td align="right"><img src="img/freeshim.png" border="0" alt="" width="200" height="98" /></td>
+		<td align="left">FreeSHIM</td>
+	</tr>
+</table>
+
+This is the web administration interface for <em>FreeSHIM</em>. Web services
+are located <a href="services/">here</a>.
+
 </body>
 </html>

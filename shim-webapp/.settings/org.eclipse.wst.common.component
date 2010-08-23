@@ -9,6 +9,9 @@
         <dependent-module deploy-path="/WEB-INF/lib" handle="module:/resource/shim-driver-topaz/shim-driver-topaz">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module deploy-path="/WEB-INF/lib" handle="module:/resource/shim-driver-signature-dummy/shim-driver-signature-dummy">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <property name="context-root" value="shim-webapp"/>
         <property name="java-output-path" value="/shim-webapp/target/classes"/>
     </wb-module>

@@ -57,11 +57,14 @@ print "\n";
 $x = (object) array( 'return' => '' );
 
 while ($x->return != 'COMPLETE' && $x->return != 'ERROR') {
-	print "getSignatureStatus ( $id ) : \n";
-	$x = $sc->getSignatureStatus((object)array("id" => $id));
+	print "getJobStatus ( $id ) : \n";
+	$x = $sc->getJobStatus((object)array("id" => $id));
 	print_r( $x );
 	print "\n";
-	sleep (5);
+	if ($x->return != 'COMPLETE' && $x->return != 'ERROR') {
+		// Only wait if we're not done yet.
+		sleep (5);
+	}
 }
 
 unlink($temp);

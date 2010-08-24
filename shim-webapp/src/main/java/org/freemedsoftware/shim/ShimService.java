@@ -30,6 +30,7 @@ import javax.jws.WebParam;
 import javax.jws.WebService;
 import javax.ws.rs.PathParam;
 
+import org.freemedsoftware.device.JobStoreItem;
 import org.freemedsoftware.shim.exception.DeviceNotAvailableException;
 
 @WebService
@@ -43,7 +44,11 @@ public interface ShimService {
 			@PathParam("displayInformation") @WebParam(name = "displayInformation") String displayInformation)
 			throws DeviceNotAvailableException;
 
-	public SignatureStatus getSignatureStatus(
+	public SignatureStatus getJobStatus(
+			@PathParam("requestId") @WebParam(name = "requestId") Integer requestId)
+			throws Exception;
+
+	public JobStoreItem getJobItem(
 			@PathParam("requestId") @WebParam(name = "requestId") Integer requestId)
 			throws Exception;
 

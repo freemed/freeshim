@@ -83,13 +83,21 @@ public class ShimServiceImpl implements ShimService {
 	}
 
 	@GET
-	@Path("signaturestatus/{requestId}")
+	@Path("jobstatus/{requestId}")
 	@Produces("application/json")
 	@Override
-	public SignatureStatus getSignatureStatus(Integer requestId)
-			throws Exception {
+	public SignatureStatus getJobStatus(Integer requestId) throws Exception {
 		JobStoreItem item = PersistentJobStoreDAO.get(requestId);
 		return SignatureStatus.fromString(item.getStatus());
+	}
+
+	@GET
+	@Path("jobitem/{requestId}")
+	@Produces("application/json")
+	@Override
+	public JobStoreItem getJobItem(Integer requestId) throws Exception {
+		JobStoreItem item = PersistentJobStoreDAO.get(requestId);
+		return item;
 	}
 
 	@GET

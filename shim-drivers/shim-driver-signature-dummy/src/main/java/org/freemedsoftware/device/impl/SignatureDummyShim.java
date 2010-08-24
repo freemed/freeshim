@@ -74,7 +74,7 @@ public class SignatureDummyShim implements SignatureInterface {
 	}
 
 	@Override
-	public boolean initSignatureRequest(JobStoreItem item) throws Exception {
+	public boolean initJobRequest(JobStoreItem item) throws Exception {
 		jobId = item.getId();
 
 		// Update status to "PENDING" (processing)

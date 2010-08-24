@@ -39,4 +39,14 @@ public interface DeviceInterface {
 
 	public boolean isProcessing();
 
+	/**
+	 * Initialize request for a job on a device.
+	 * 
+	 * @param item
+	 *            <JobStoreItem> object for this job.
+	 * @return Success
+	 * @throws Exception
+	 */
+	public boolean initJobRequest(JobStoreItem item) throws Exception;
+
 }

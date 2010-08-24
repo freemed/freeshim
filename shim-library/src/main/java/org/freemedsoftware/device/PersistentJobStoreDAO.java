@@ -27,6 +27,7 @@ package org.freemedsoftware.device;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.tmatesoft.sqljet.core.SqlJetException;
@@ -34,6 +35,8 @@ import org.tmatesoft.sqljet.core.SqlJetTransactionMode;
 import org.tmatesoft.sqljet.core.table.ISqlJetCursor;
 import org.tmatesoft.sqljet.core.table.ISqlJetTable;
 import org.tmatesoft.sqljet.core.table.SqlJetDb;
+
+import com.google.gson.Gson;
 
 public class PersistentJobStoreDAO {
 
@@ -46,8 +49,10 @@ public class PersistentJobStoreDAO {
 	private static final String JOB_STORE_CREATE_SQL = "CREATE TABLE "
 			+ TABLE_NAME + " ( " + " id INTEGER NOT NULL PRIMARY KEY"
 			+ " , device TEXT NOT NULL " + " , status TEXT NOT NULL "
-			+ " , displayText TEXT " + " , sigraw BLOB " + " , sigimage BLOB "
-			+ " ) ; ";
+			+ " , displayText TEXT " + " , printTemplate TEXT "
+			+ " , printParameters TEXT "
+			+ " , printCount INT NOT NULL DEFAULT 1 " + " , sigraw BLOB "
+			+ " , sigimage BLOB " + " ) ; ";
 
 	private static final String JOB_STORE_INDEX_ID_SQL = "CREATE INDEX id_index ON "
 			+ TABLE_NAME + "(id)";
@@ -118,6 +123,7 @@ public class PersistentJobStoreDAO {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public static JobStoreItem get(Integer id) throws SqlJetException {
 		synchronized (db) {
 			db.beginTransaction(SqlJetTransactionMode.READ_ONLY);
@@ -130,6 +136,11 @@ public class PersistentJobStoreDAO {
 				item.setDevice(cursor.getString("device"));
 				item.setStatus(cursor.getString("status"));
 				item.setDisplayText(cursor.getString("displayText"));
+				item.setPrintTemplate(cursor.getString("printTemplate"));
+				item.setPrintParameters((Map<String, String>) new Gson()
+						.fromJson(cursor.getString("printParameters"),
+								Map.class));
+				item.setPrintCount((int) cursor.getInteger("printCount"));
 				item.setSignatureRaw(cursor.getBlobAsArray("sigraw"));
 				item.setSignatureImage(cursor.getBlobAsArray("sigimage"));
 
@@ -145,6 +156,7 @@ public class PersistentJobStoreDAO {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public static List<JobStoreItem> unassignedJobs() throws SqlJetException {
 		synchronized (db) {
 			db.beginTransaction(SqlJetTransactionMode.READ_ONLY);
@@ -164,6 +176,11 @@ public class PersistentJobStoreDAO {
 					item.setDevice(cursor.getString("device"));
 					item.setStatus(cursor.getString("status"));
 					item.setDisplayText(cursor.getString("displayText"));
+					item.setPrintTemplate(cursor.getString("printTemplate"));
+					item.setPrintParameters((Map<String, String>) new Gson()
+							.fromJson(cursor.getString("printParameters"),
+									Map.class));
+					item.setPrintCount((int) cursor.getInteger("printCount"));
 					item.setSignatureRaw(cursor.getBlobAsArray("sigraw"));
 					item.setSignatureImage(cursor.getBlobAsArray("sigimage"));
 					items.add(item);
@@ -187,8 +204,10 @@ public class PersistentJobStoreDAO {
 			try {
 				ISqlJetTable table = db.getTable(TABLE_NAME);
 				return (int) table.insert(i.getId(), i.getDevice(), i
-						.getStatus(), i.getDisplayText(), i.getSignatureRaw(),
-						i.getSignatureImage());
+						.getStatus(), i.getDisplayText(), i.getPrintTemplate(),
+						new Gson().toJson(i.getPrintParameters()), i
+								.getPrintCount(), i.getSignatureRaw(), i
+								.getSignatureImage());
 			} catch (Exception t) {
 				log.error(t);
 				throw new SqlJetException(t);
@@ -209,7 +228,9 @@ public class PersistentJobStoreDAO {
 				do {
 					updateCursor.update(i.getId(), i.getDevice(),
 							i.getStatus(), i.getDisplayText(), i
-									.getSignatureRaw(), i.getSignatureImage());
+									.getPrintTemplate(), new Gson().toJson(i
+									.getPrintParameters()), i.getPrintCount(),
+							i.getSignatureRaw(), i.getSignatureImage());
 				} while (updateCursor.next());
 				updateCursor.close();
 			} catch (Throwable t) {

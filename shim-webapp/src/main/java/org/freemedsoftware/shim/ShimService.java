@@ -25,6 +25,7 @@
 package org.freemedsoftware.shim;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.jws.WebParam;
 import javax.jws.WebService;
@@ -39,6 +40,12 @@ public interface ShimService {
 	public static int PROTOCOL_VERSION = 1;
 
 	public Integer getProtocolVersion();
+
+	public Integer requestLabel(
+			@PathParam("printTemplate") @WebParam(name = "printTemplate") String printTemplate,
+			@PathParam("printParameters") @WebParam(name = "printParameters") Map<String, String> printParameters,
+			@PathParam("copyCount") @WebParam(name = "copyCount") Integer copyCount)
+			throws DeviceNotAvailableException;
 
 	public Integer requestSignature(
 			@PathParam("displayInformation") @WebParam(name = "displayInformation") String displayInformation)

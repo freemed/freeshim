@@ -25,6 +25,7 @@
 package org.freemedsoftware.shim;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.jws.WebService;
@@ -35,6 +36,7 @@ import javax.xml.ws.WebServiceContext;
 
 import org.apache.log4j.Logger;
 import org.freemedsoftware.device.JobStoreItem;
+import org.freemedsoftware.device.LabelPrinterInterface;
 import org.freemedsoftware.device.PersistentJobStoreDAO;
 import org.freemedsoftware.device.ShimDeviceManager;
 import org.freemedsoftware.device.SignatureInterface;
@@ -58,7 +60,34 @@ public class ShimServiceImpl implements ShimService {
 	}
 
 	@GET
-	@Path("requestsignature/{device}")
+	@Path("label/{printTemplate}/{printParameters}/{copyCount}")
+	@Produces("application/json")
+	@Override
+	public Integer requestLabel(String printTemplate,
+			Map<String, String> printParameters, Integer copyCount)
+			throws DeviceNotAvailableException {
+		ShimDeviceManager<LabelPrinterInterface> manager = MasterControlServlet
+				.getLabelPrinterDeviceManager();
+		if (manager == null) {
+			throw new DeviceNotAvailableException();
+		}
+		JobStoreItem item = new JobStoreItem();
+		Integer itemId = 0;
+		item.setStatus(JobStoreItem.STATUS_NEW);
+		item.setDevice(JobStoreItem.DEVICE_LABEL);
+		item.setPrintTemplate(printTemplate);
+		item.setPrintParameters(printParameters);
+		try {
+			itemId = PersistentJobStoreDAO.insert(item);
+		} catch (SqlJetException e) {
+			log.error(e);
+			throw new DeviceNotAvailableException();
+		}
+		return itemId;
+	}
+
+	@GET
+	@Path("signature/{displayInformation}")
 	@Produces("application/json")
 	@Override
 	public Integer requestSignature(String displayInformation)

@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServlet;
 import org.apache.commons.configuration.CompositeConfiguration;
 import org.apache.log4j.Logger;
 import org.freemedsoftware.device.JobStoreItem;
+import org.freemedsoftware.device.LabelPrinterInterface;
 import org.freemedsoftware.device.PersistentJobStoreDAO;
 import org.freemedsoftware.device.ShimDeviceManager;
 import org.freemedsoftware.device.SignatureInterface;
@@ -52,7 +53,9 @@ public class MasterControlServlet extends HttpServlet {
 
 	protected CompositeConfiguration config = null;
 
-	protected static ShimDeviceManager<SignatureInterface> sManager = null;
+	protected static ShimDeviceManager<SignatureInterface> signatureDeviceManager = null;
+
+	protected static ShimDeviceManager<LabelPrinterInterface> labelPrinterDeviceManager = null;
 
 	protected Timer timer = new Timer();
 
@@ -104,19 +107,46 @@ public class MasterControlServlet extends HttpServlet {
 			driverConfig.put(k, config.getString(k));
 		}
 
+		// Initialize signature pad if driver is defined
+
 		String signatureDriver = config.getString("driver.signature");
 		if (signatureDriver != null) {
 			logger.info("Initializing signature pad driver " + signatureDriver);
 			try {
 				logger.debug("instantiating driver");
-				sManager = new ShimDeviceManager<SignatureInterface>(
+				signatureDeviceManager = new ShimDeviceManager<SignatureInterface>(
 						signatureDriver);
-				sManager.getDeviceInstance().configure(driverConfig);
+				signatureDeviceManager.getDeviceInstance().configure(
+						driverConfig);
 				logger.debug("running init() for driver");
-				if (sManager == null) {
+				if (signatureDeviceManager == null) {
 					logger.error("Signature manager is null!!");
 				}
-				sManager.init();
+				signatureDeviceManager.init();
+			} catch (Exception e) {
+				logger.error(e);
+			}
+		} else {
+			logger.warn("No signature pad driver specified, skipping.");
+		}
+
+		// Initialize label printer, if a driver is defined
+
+		String labelPrinterDriver = config.getString("driver.labelprinter");
+		if (labelPrinterDriver != null) {
+			logger.info("Initializing label printer driver "
+					+ labelPrinterDriver);
+			try {
+				logger.debug("instantiating driver");
+				labelPrinterDeviceManager = new ShimDeviceManager<LabelPrinterInterface>(
+						labelPrinterDriver);
+				labelPrinterDeviceManager.getDeviceInstance().configure(
+						driverConfig);
+				logger.debug("running init() for driver");
+				if (labelPrinterDeviceManager == null) {
+					logger.error("Label printer manager is null!!");
+				}
+				labelPrinterDeviceManager.init();
 			} catch (Exception e) {
 				logger.error(e);
 			}
@@ -141,6 +171,7 @@ public class MasterControlServlet extends HttpServlet {
 			}
 
 			protected void scanForJobs() {
+				JobStoreItem labelItem = null;
 				JobStoreItem signatureItem = null;
 				JobStoreItem vitalsItem = null;
 				try {
@@ -148,12 +179,17 @@ public class MasterControlServlet extends HttpServlet {
 							.unassignedJobs();
 					Iterator<JobStoreItem> iter = items.iterator();
 					while (iter.hasNext() && signatureItem == null
-							&& vitalsItem == null) {
+							&& vitalsItem == null && labelItem == null) {
 						JobStoreItem thisItem = iter.next();
 						if (thisItem.getDevice().equalsIgnoreCase(
 								JobStoreItem.DEVICE_SIGNATURE)
 								&& signatureItem == null) {
 							signatureItem = thisItem;
+						}
+						if (thisItem.getDevice().equalsIgnoreCase(
+								JobStoreItem.DEVICE_LABEL)
+								&& labelItem == null) {
+							labelItem = thisItem;
 						}
 						if (thisItem.getDevice().equalsIgnoreCase(
 								JobStoreItem.DEVICE_VITALS)
@@ -165,13 +201,40 @@ public class MasterControlServlet extends HttpServlet {
 					logger.error(e);
 				}
 
-				if (signatureItem != null && sManager != null) {
+				// Process any new signature requests
+
+				if (signatureItem != null && signatureDeviceManager != null) {
 					logger.info("Found signature item to be processed (id = "
 							+ signatureItem.getId() + ")");
-					if (!sManager.getDeviceInstance().isProcessing()) {
+					if (!signatureDeviceManager.getDeviceInstance()
+							.isProcessing()) {
 						try {
-							sManager.getDeviceInstance().initSignatureRequest(
-									signatureItem);
+							signatureDeviceManager.getDeviceInstance()
+									.initJobRequest(signatureItem);
+
+							// Update with pending status
+							signatureItem
+									.setStatus(JobStoreItem.STATUS_PENDING);
+							PersistentJobStoreDAO.update(signatureItem);
+						} catch (Exception e) {
+							logger.error(e);
+						}
+					} else {
+						logger
+								.warn("Device is processing, skipping new job load");
+					}
+				}
+
+				// Process any new label requests
+
+				if (labelItem != null && labelPrinterDeviceManager != null) {
+					logger.info("Found label item to be processed (id = "
+							+ labelItem.getId() + ")");
+					if (!labelPrinterDeviceManager.getDeviceInstance()
+							.isProcessing()) {
+						try {
+							labelPrinterDeviceManager.getDeviceInstance()
+									.initJobRequest(signatureItem);
 
 							// Update with pending status
 							signatureItem
@@ -192,15 +255,27 @@ public class MasterControlServlet extends HttpServlet {
 	}
 
 	public static ShimDeviceManager<SignatureInterface> getSignatureDeviceManager() {
-		return sManager;
+		return signatureDeviceManager;
+	}
+
+	public static ShimDeviceManager<LabelPrinterInterface> getLabelPrinterDeviceManager() {
+		return labelPrinterDeviceManager;
 	}
 
 	@Override
 	public void destroy() {
-		if (sManager != null) {
+		if (signatureDeviceManager != null) {
 			logger.info("Closing signature manager");
 			try {
-				sManager.close();
+				signatureDeviceManager.close();
+			} catch (Exception e) {
+				logger.warn(e);
+			}
+		}
+		if (labelPrinterDeviceManager != null) {
+			logger.info("Closing label printer manager");
+			try {
+				labelPrinterDeviceManager.close();
 			} catch (Exception e) {
 				logger.warn(e);
 			}

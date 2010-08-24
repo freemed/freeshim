@@ -24,6 +24,9 @@
 
 package org.freemedsoftware.device;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class JobStoreItem {
 
 	/**
@@ -46,6 +49,7 @@ public class JobStoreItem {
 	 */
 	public final static String STATUS_NEW = "NEW";
 
+	public final static String DEVICE_LABEL = "LABEL";
 	public final static String DEVICE_SIGNATURE = "SIGNATURE";
 	public final static String DEVICE_VITALS = "VITALS";
 
@@ -56,6 +60,12 @@ public class JobStoreItem {
 	private String device;
 
 	private String displayText;
+
+	private String printTemplate = null;
+
+	private Map<String, String> printParameters = new HashMap<String, String>();
+
+	private Integer printCount = 1;
 
 	private byte[] signatureRaw;
 
@@ -91,6 +101,30 @@ public class JobStoreItem {
 
 	public String getDisplayText() {
 		return displayText;
+	}
+
+	public void setPrintTemplate(String printTemplate) {
+		this.printTemplate = printTemplate;
+	}
+
+	public String getPrintTemplate() {
+		return printTemplate;
+	}
+
+	public void setPrintParameters(Map<String, String> printParameters) {
+		this.printParameters = printParameters;
+	}
+
+	public Map<String, String> getPrintParameters() {
+		return printParameters;
+	}
+
+	public void setPrintCount(Integer printCount) {
+		this.printCount = printCount;
+	}
+
+	public Integer getPrintCount() {
+		return printCount;
 	}
 
 	public void setSignatureRaw(byte[] signatureRaw) {

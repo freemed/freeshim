@@ -330,7 +330,7 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 	}
 
 	@Override
-	public boolean initSignatureRequest(JobStoreItem item) throws Exception {
+	public boolean initJobRequest(JobStoreItem item) throws Exception {
 		// If we're already processing a request, do not progress any further.
 		if (currentJobId != null) {
 			log.error("Job in progress already for pad.");
@@ -503,7 +503,7 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 		System.out.println("Initializing shim driver");
 		s.init();
 		System.out.println("Initializing signature request for pad");
-		s.initSignatureRequest(null);
+		s.initJobRequest(null);
 	}
 
 }

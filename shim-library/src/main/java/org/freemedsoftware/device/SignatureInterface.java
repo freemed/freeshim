@@ -32,14 +32,4 @@ package org.freemedsoftware.device;
  */
 public interface SignatureInterface extends DeviceInterface {
 
-	/**
-	 * Initialize request for a signature on a signature pad.
-	 * 
-	 * @param item
-	 *            <JobStoreItem> object for this signature job.
-	 * @return Success
-	 * @throws Exception
-	 */
-	public boolean initSignatureRequest(JobStoreItem item) throws Exception;
-
 }

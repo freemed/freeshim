@@ -29,6 +29,7 @@ import java.util.List;
 
 import org.freemedsoftware.device.DeviceCapability;
 import org.freemedsoftware.device.DeviceInterface;
+import org.freemedsoftware.device.JobStoreItem;
 import org.freemedsoftware.device.ShimDevice;
 
 @ShimDevice(name = "Dummy Shim", capability = DeviceCapability.DEVICE_SIGNATURE_TABLET)
@@ -56,6 +57,11 @@ public class DummyShim implements DeviceInterface {
 
 	@Override
 	public boolean isProcessing() {
+		return false;
+	}
+
+	@Override
+	public boolean initJobRequest(JobStoreItem item) throws Exception {
 		return false;
 	}
 

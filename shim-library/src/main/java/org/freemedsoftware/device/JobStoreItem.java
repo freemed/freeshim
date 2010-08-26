@@ -25,7 +25,6 @@
 package org.freemedsoftware.device;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class JobStoreItem {
 
@@ -63,7 +62,7 @@ public class JobStoreItem {
 
 	private String printTemplate = null;
 
-	private Map<String, String> printParameters = new HashMap<String, String>();
+	private HashMap<String, String> printParameters = new HashMap<String, String>();
 
 	private Integer printCount = 1;
 
@@ -111,11 +110,11 @@ public class JobStoreItem {
 		return printTemplate;
 	}
 
-	public void setPrintParameters(Map<String, String> printParameters) {
+	public void setPrintParameters(HashMap<String, String> printParameters) {
 		this.printParameters = printParameters;
 	}
 
-	public Map<String, String> getPrintParameters() {
+	public HashMap<String, String> getPrintParameters() {
 		return printParameters;
 	}
 

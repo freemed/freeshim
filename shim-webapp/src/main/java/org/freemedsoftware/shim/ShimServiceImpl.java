@@ -24,8 +24,8 @@
 
 package org.freemedsoftware.shim;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.jws.WebService;
@@ -64,7 +64,7 @@ public class ShimServiceImpl implements ShimService {
 	@Produces("application/json")
 	@Override
 	public Integer requestLabel(String printTemplate,
-			Map<String, String> printParameters, Integer copyCount)
+			HashMap<String, String> printParameters, Integer copyCount)
 			throws DeviceNotAvailableException {
 		ShimDeviceManager<LabelPrinterInterface> manager = MasterControlServlet
 				.getLabelPrinterDeviceManager();

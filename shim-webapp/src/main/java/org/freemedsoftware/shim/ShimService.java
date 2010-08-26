@@ -24,8 +24,8 @@
 
 package org.freemedsoftware.shim;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.jws.WebParam;
 import javax.jws.WebService;
@@ -43,7 +43,7 @@ public interface ShimService {
 
 	public Integer requestLabel(
 			@PathParam("printTemplate") @WebParam(name = "printTemplate") String printTemplate,
-			@PathParam("printParameters") @WebParam(name = "printParameters") Map<String, String> printParameters,
+			@PathParam("printParameters") @WebParam(name = "printParameters") HashMap<String, String> printParameters,
 			@PathParam("copyCount") @WebParam(name = "copyCount") Integer copyCount)
 			throws DeviceNotAvailableException;
 

@@ -38,10 +38,10 @@ import java.util.TimerTask;
 import org.apache.log4j.Logger;
 import org.freemedsoftware.device.DeviceCapability;
 import org.freemedsoftware.device.JobStoreItem;
+import org.freemedsoftware.device.LabelPrinterInterface;
 import org.freemedsoftware.device.ParallelPrinterInterface;
 import org.freemedsoftware.device.PersistentJobStoreDAO;
 import org.freemedsoftware.device.ShimDevice;
-import org.freemedsoftware.device.SignatureInterface;
 import org.tmatesoft.sqljet.core.SqlJetException;
 
 import freemarker.template.DefaultObjectWrapper;
@@ -49,7 +49,7 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
 @ShimDevice(name = "Label Printer ESC-POS Shim", capability = DeviceCapability.DEVICE_LABEL_PRINTER)
-public class LabelEscPosShim implements SignatureInterface {
+public class LabelEscPosShim implements LabelPrinterInterface {
 
 	protected Logger log = Logger.getLogger(LabelEscPosShim.class);
 
@@ -196,6 +196,16 @@ public class LabelEscPosShim implements SignatureInterface {
 				.getClassLoader().getResource("/templates").toExternalForm()));
 		cfg.setObjectWrapper(new DefaultObjectWrapper());
 		return cfg;
+	}
+
+	@Override
+	public boolean writeToPrinter(byte[] data) throws IOException {
+		if (printerInterface != null) {
+			log.debug("Got " + data.length + " bytes");
+			printerInterface.write(new String(data));
+			log.info("Write to printer device completed.");
+		}
+		return true;
 	}
 
 }

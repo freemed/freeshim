@@ -24,6 +24,8 @@
 
 package org.freemedsoftware.device;
 
+import java.io.IOException;
+
 /**
  * <DeviceInterface> child interface. All label printer devices should implement
  * this interface.
@@ -32,6 +34,6 @@ package org.freemedsoftware.device;
  */
 public interface LabelPrinterInterface extends DeviceInterface {
 
-	public boolean writeToPrinter(byte[] data);
+	public boolean writeToPrinter(byte[] data) throws IOException;
 
 }

@@ -50,7 +50,7 @@ print_r( $sc->getProtocolVersion() );
 print "\n";
 
 print "requestSignature('Patient: Me') : \n";
-$id = $sc->requestSignature((object)array("displayInformation" => "Patient: Me"))->return;
+$id = $sc->requestSignature((object)array("displayInformation" => "Patient: " . ( $argv[1] != '' ? $argv[1] : "Me" ) ))->return;
 print_r( $id );
 print "\n";
 
@@ -58,7 +58,7 @@ $x = (object) array( 'return' => '' );
 
 while ($x->return != 'COMPLETE' && $x->return != 'ERROR') {
 	print "getJobStatus ( $id ) : \n";
-	$x = $sc->getJobStatus((object)array("id" => $id));
+	$x = $sc->getJobStatus((object)array("requestId" => $id));
 	print_r( $x );
 	print "\n";
 	if ($x->return != 'COMPLETE' && $x->return != 'ERROR') {
@@ -66,6 +66,11 @@ while ($x->return != 'COMPLETE' && $x->return != 'ERROR') {
 		sleep (5);
 	}
 }
+
+print "getJobItem ( $id ) : \n";
+$x = $sc->getJobItem((object)array("requestId" => $id));
+print_r( $x );
+print "\n";
 
 unlink($temp);
 

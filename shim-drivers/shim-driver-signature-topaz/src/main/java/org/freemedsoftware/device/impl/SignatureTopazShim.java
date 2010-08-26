@@ -203,6 +203,7 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 					log.info("Clearing signature job id");
 					currentJobId = null;
 					job = null;
+					numSigPoints = 0;
 					lastSeen.set(0L);
 					log.info("Clearing tablet.");
 					sigObj.setEnabled(false);
@@ -217,7 +218,6 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 					// Clear the LCD after certain number of ms.
 					timer.schedule(new TopazTimerSignatureClearDisplayTask(),
 							DISPLAY_SIGNATURE_CONFIRMATION);
-
 				}
 			}
 
@@ -248,11 +248,14 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 			// data we've got.
 
 			// "Handle" the signature
+			log.info("Attempting to handle signature");
 			handleSignature();
 
 			// Clear everything
 			log.info("Clearing signature job id");
+			job = null;
 			currentJobId = null;
+			numSigPoints = 0;
 			lastSeen.set(0L);
 			log.info("Clearing pad.");
 			sigObj.setEnabled(false);
@@ -355,6 +358,10 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 
 		// Store uid locally
 		currentJobId = job.getId();
+
+		// Reset counters
+		numSigPoints = 0;
+		lastSeen.set(0L);
 
 		sigObj.setEnabled(true);
 		sigObj.autoKeyStart();

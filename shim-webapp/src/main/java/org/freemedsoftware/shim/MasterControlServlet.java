@@ -284,6 +284,7 @@ public class MasterControlServlet extends HttpServlet {
 			logger.info("Cancelling timer instance");
 			timer.cancel();
 		}
+		PersistentJobStoreDAO.close();
 		super.destroy();
 	}
 

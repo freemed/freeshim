@@ -26,8 +26,8 @@ package org.freemedsoftware.device;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.tmatesoft.sqljet.core.SqlJetException;
@@ -111,7 +111,9 @@ public class PersistentJobStoreDAO {
 						.getPrimaryKeyIndexName(), new Object[] { id },
 						new Object[] { id });
 				while (!deleteCursor.eof()) {
-					deleteCursor.delete();
+					if (deleteCursor.getInteger("id") == id) {
+						deleteCursor.delete();
+					}
 				}
 				deleteCursor.close();
 			} catch (Throwable t) {
@@ -123,7 +125,6 @@ public class PersistentJobStoreDAO {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public static JobStoreItem get(Integer id) throws SqlJetException {
 		synchronized (db) {
 			db.beginTransaction(SqlJetTransactionMode.READ_ONLY);
@@ -137,9 +138,8 @@ public class PersistentJobStoreDAO {
 				item.setStatus(cursor.getString("status"));
 				item.setDisplayText(cursor.getString("displayText"));
 				item.setPrintTemplate(cursor.getString("printTemplate"));
-				item.setPrintParameters((Map<String, String>) new Gson()
-						.fromJson(cursor.getString("printParameters"),
-								Map.class));
+				item.setPrintParameters(deserializeMap(cursor
+						.getString("printParameters")));
 				item.setPrintCount((int) cursor.getInteger("printCount"));
 				item.setSignatureRaw(cursor.getBlobAsArray("sigraw"));
 				item.setSignatureImage(cursor.getBlobAsArray("sigimage"));
@@ -156,7 +156,6 @@ public class PersistentJobStoreDAO {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public static List<JobStoreItem> unassignedJobs() throws SqlJetException {
 		synchronized (db) {
 			db.beginTransaction(SqlJetTransactionMode.READ_ONLY);
@@ -177,9 +176,8 @@ public class PersistentJobStoreDAO {
 					item.setStatus(cursor.getString("status"));
 					item.setDisplayText(cursor.getString("displayText"));
 					item.setPrintTemplate(cursor.getString("printTemplate"));
-					item.setPrintParameters((Map<String, String>) new Gson()
-							.fromJson(cursor.getString("printParameters"),
-									Map.class));
+					item.setPrintParameters(deserializeMap(cursor
+							.getString("printParameters")));
 					item.setPrintCount((int) cursor.getInteger("printCount"));
 					item.setSignatureRaw(cursor.getBlobAsArray("sigraw"));
 					item.setSignatureImage(cursor.getBlobAsArray("sigimage"));
@@ -205,8 +203,8 @@ public class PersistentJobStoreDAO {
 				ISqlJetTable table = db.getTable(TABLE_NAME);
 				return (int) table.insert(i.getId(), i.getDevice(), i
 						.getStatus(), i.getDisplayText(), i.getPrintTemplate(),
-						new Gson().toJson(i.getPrintParameters()), i
-								.getPrintCount(), i.getSignatureRaw(), i
+						serializeMap(i.getPrintParameters()),
+						i.getPrintCount(), i.getSignatureRaw(), i
 								.getSignatureImage());
 			} catch (Exception t) {
 				log.error(t);
@@ -226,11 +224,13 @@ public class PersistentJobStoreDAO {
 						.getPrimaryKeyIndexName(), new Object[] { i.getId() },
 						new Object[] { i.getId() });
 				do {
-					updateCursor.update(i.getId(), i.getDevice(),
-							i.getStatus(), i.getDisplayText(), i
-									.getPrintTemplate(), new Gson().toJson(i
-									.getPrintParameters()), i.getPrintCount(),
-							i.getSignatureRaw(), i.getSignatureImage());
+					if (updateCursor.getInteger("id") == i.getId()) {
+						updateCursor.update(i.getId(), i.getDevice(), i
+								.getStatus(), i.getDisplayText(), i
+								.getPrintTemplate(), serializeMap(i
+								.getPrintParameters()), i.getPrintCount(), i
+								.getSignatureRaw(), i.getSignatureImage());
+					}
 				} while (updateCursor.next());
 				updateCursor.close();
 			} catch (Throwable t) {
@@ -239,6 +239,39 @@ public class PersistentJobStoreDAO {
 			} finally {
 				db.commit();
 			}
+		}
+	}
+
+	public static void close() {
+		if (db != null) {
+			try {
+				db.close();
+			} catch (SqlJetException e) {
+				log.error(e);
+			}
+		}
+	}
+
+	private static String serializeMap(HashMap<String, String> map) {
+		try {
+			return new Gson().toJson(map);
+		} catch (Exception ex) {
+			log.trace(ex);
+			return "{}";
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static HashMap<String, String> deserializeMap(String raw) {
+		try {
+			if (raw == null || raw == "" || raw == "{}") {
+				return (HashMap<String, String>) null;
+			}
+			return (HashMap<String, String>) new Gson().fromJson(raw,
+					HashMap.class);
+		} catch (Exception e) {
+			log.trace(e);
+			return (HashMap<String, String>) null;
 		}
 	}
 

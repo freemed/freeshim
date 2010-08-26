@@ -7,7 +7,7 @@
 	<version>0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>shim-driver-topaz</name>
+	<name>shim-driver-signature-topaz</name>
 	<url>http://freemedsoftware.org</url>
 
 	<properties>

@@ -53,7 +53,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.freemedsoftware</groupId>
-			<artifactId>shim-driver-topaz</artifactId>
+			<artifactId>shim-driver-signature-topaz</artifactId>
 			<version>0.1-SNAPSHOT</version>
 			<type>jar</type>
 			<scope>compile</scope>

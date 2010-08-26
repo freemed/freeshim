@@ -11,7 +11,7 @@
   <modules>
     <module>shim-driver-label-escpos</module>
     <module>shim-driver-signature-dummy</module>
-    <module>shim-driver-topaz</module>
+    <module>shim-driver-signature-topaz</module>
   </modules>
   <dependencies>
     <dependency>

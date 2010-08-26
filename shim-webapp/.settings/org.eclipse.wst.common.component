@@ -9,7 +9,7 @@
         <dependent-module deploy-path="/WEB-INF/lib" handle="module:/resource/shim-driver-label-escpos/shim-driver-label-escpos">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module deploy-path="/WEB-INF/lib" handle="module:/resource/shim-driver-topaz/shim-driver-topaz">
+        <dependent-module deploy-path="/WEB-INF/lib" handle="module:/resource/shim-driver-signature.topaz/shim-driver-signature.topaz">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module deploy-path="/WEB-INF/lib" handle="module:/resource/shim-driver-signature-dummy/shim-driver-signature-dummy">

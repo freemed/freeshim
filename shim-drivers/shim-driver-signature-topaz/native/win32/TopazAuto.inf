@@ -1,0 +1,60 @@
+; Installation inf for the Topaz USB Tablet
+;
+; (c) Copyright 2000-2002, Topaz Systems, Inc.
+;
+
+[Version]
+Signature="$CHICAGO$"
+Class=USB
+ClassGUID={36FC9E60-C465-11CF-8056-444553540000}
+provider=%Topaz%
+DriverVer=5/15/2002
+
+
+[Manufacturer]
+%MfgName%=Topaz
+
+[Topaz]
+%USB\VID_06A8&PID_0042.DeviceDesc%=TOPAZUSB.Dev, USB\VID_06A8&PID_0042
+
+[PreCopySection]
+HKR,,NoSetupUI,,1
+
+[DestinationDirs]
+DefaultDestDir=12
+
+[TOPAZUSB.Dev]
+AddReg=TOPAZUSB.AddReg
+
+[TOPAZUSB.Dev.NT]
+AddReg=TOPAZUSB.AddReg
+
+[TOPAZUSB.Dev.NT.Services]
+Addservice = TOPAZUSB, 0x00000002, TOPAZUSB.AddService
+
+[TOPAZUSB.AddService]
+DisplayName    = %TOPAZUSB.SvcDesc%
+ServiceType    = 1                  ; SERVICE_KERNEL_DRIVER
+StartType      = 3                  ; SERVICE_DEMAND_START
+ErrorControl   = 1                  ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\TOPAZUSB.sys
+LoadOrderGroup = Base
+
+[TOPAZUSB.AddReg]
+HKR,,DevLoader,,*ntkern
+HKR,,NTMPDriver,,TOPAZUSB.sys
+;HKLM,"System\Currentcontrolset\Services\TopazUsb\Parameters","MaximumTransferSize",0x10001,4096
+;HKLM,"System\Currentcontrolset\Services\TopazUsb\Parameters","DebugLevel",0x10001,2
+
+
+
+;---------------------------------------------------------------;
+
+[Strings]
+Topaz="Topaz"
+MfgName="Topaz"
+USB\VID_06A8&PID_0042.DeviceDesc="TopazUsb.Sys Topaz USB Tablet"
+TOPAZUSB.SvcDesc="TopazUsb.Sys Topaz Tablet USB Driver"
+
+
+

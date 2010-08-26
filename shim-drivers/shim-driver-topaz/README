@@ -1,9 +1,0 @@
-$Id$
-
-SHIM driver for Topaz System SigPlus-driver based signature pads.
-
-This driver has been tested with:
-
-	SignatureGem4x5
-	SignatureGemLCD1x5
-

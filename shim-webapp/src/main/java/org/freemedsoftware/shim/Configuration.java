@@ -37,7 +37,8 @@ import org.apache.log4j.Logger;
 public class Configuration {
 
 	public static String DEFAULT_CONFIG = "/WEB-INF/shim-default.properties";
-	public static String OVERRIDE_CONFIG = System.getProperty("properties");
+	public static String OVERRIDE_CONFIG = System
+			.getProperty("shim.properties");
 
 	protected static CompositeConfiguration compositeConfiguration = null;
 
@@ -102,7 +103,7 @@ public class Configuration {
 				log.error("Could not load default configuration from "
 						+ servletContext.getServletContext().getRealPath(
 								DEFAULT_CONFIG));
-				e.printStackTrace();
+				// e.printStackTrace();
 			}
 			if (OVERRIDE_CONFIG != null) {
 				PropertiesConfiguration overrides = null;

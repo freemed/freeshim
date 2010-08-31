@@ -15,3 +15,8 @@ To install properly in udev-based systems, create
 This should allow all users to read and write data to/from any
 Topaz Systems tablet.
 
+JNI libraries for your native JVM should be installed in
+java.library.path, and are located in the distribution under
+"native", which is normally $JAVA_HOME/jre/lib/$ARCH/ (where
+$ARCH is amd64, i386, etc).
+

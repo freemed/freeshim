@@ -1,5 +1,7 @@
 $Id$
 
+Basics:
+
 SHIM webapp component. This is a J2EE web application with CXF-based
 SOAP/REST services. The WSDL is available at
 
@@ -11,5 +13,67 @@ ${catalina.home}/work/jobstore.db but can be overridden by the properties
 "overrides" file, which can be specified by defining the "properties"
 property like this:
 
-	-Dproperties=/path/to/the/config/shim.properties
+	-Dshim.properties=/path/to/the/config/shim.properties
+
+Building:
+
+1) "mvn package". You'll probably have to run this from the root of the
+   shim source so that all dependent libraries are built, etc. The final
+   packaged version is available in ${SHIM}/shim-webapp/target/shim.war
+
+Installation:
+
+1) Copy "shim.war" from "target" into webapps directory of Tomcat
+   install.
+
+2) Copy native libraries into the appropriate place.
+
+3) Create shim.properties file with any overrides for configuration.
+   Anything which isn't overridden has default values which should
+   work for most common configurations. *Most*.
+
+4) Start tomcat with:
+
+   JAVA_OPTS="-Dshim.properties=${TOMCAT_HOME}/shim.properties" ./bin/catalina.sh start
+
+--- Installation with Debian packages/integration ---
+
+1) apt-get install tomcat5.5 sun-java6-jre
+
+2) Copy librxtx*.so into /usr/lib/jvm/java-6-sun/jre/lib/$ARCH/
+   (where $ARCH is amd64, i386, etc). You have to use rxtx v2.2pre2,
+   otherwise it won't work. Don't ask why, just understand it won't
+   work if you don't use the newer version. Don't use the
+   librxtx-java package, it's old.
+
+3) Copy shim.war from "target" into
+   /var/lib/tomcat5.5/webapps/ and make its owner "tomcat55"
+
+4) Append the following lines to /etc/default/tomcat5.5:
+
+   JAVA_HOME=/usr/lib/jvm/java-6-sun
+   JAVA_OPTS=" -Dshim.properties=/etc/shim.properties "
+   TOMCAT5_SECURITY=no
+
+5) Add credentials to /var/lib/tomcat5.5/conf/tomcat-users.xml like:
+
+   <role rolename="default" />
+   <user username="Administrator" password="password" roles="default" />
+
+6) Create shim.properties file with any overrides.
+   (Anything which isn't overridden has default values.)
+
+   Make sure to copy the file to /etc/shim.properties when you
+   have finished making your changes.
+
+7) Add the "tomcat55" user to the "lp" and "dialout" groups, and make
+   any necessary udev changes for Topaz signature pads, etc.
+
+8) Start tomcat with:
+
+   /etc/init.d/tomcat5.5 restart
+
+9) The URL for this instance will be:
+
+   http://${MACHINE-NAME-OR-IP}:8180/shim/services/ShimService?wsdl
 

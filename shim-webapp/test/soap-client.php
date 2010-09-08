@@ -70,6 +70,7 @@ while ($x->return != 'COMPLETE' && $x->return != 'ERROR') {
 print "getJobItem ( $id ) : \n";
 $x = $sc->getJobItem((object)array("requestId" => $id));
 print_r( $x );
+file_put_contents( "/tmp/test.png", $x->return->signatureImage );
 print "\n";
 
 unlink($temp);

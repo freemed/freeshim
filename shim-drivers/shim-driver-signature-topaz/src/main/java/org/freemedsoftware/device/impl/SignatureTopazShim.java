@@ -164,11 +164,13 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 			// Only do this if there's no current job id running
 			if (currentJobId == null) {
 				log.info("Clearing display.");
-				sigObj.lcdRefresh(0, 0, 0, 640, 480);
-				sigObj.setLCDCaptureMode(LcdCaptureMode.NO_LCD);
-				sigObj.setEnabled(false);
-				sigObj.setTabletState(0);
-				sigObj.clearTablet();
+				clearTabletLCD();
+				// sigObj.lcdRefresh(0, 0, 0, sigObj.getTabletLCDXSize(),
+				// sigObj.getTabletLCDYSize());
+				// sigObj.setLCDCaptureMode(LcdCaptureMode.NO_LCD);
+				// sigObj.setEnabled(false);
+				// sigObj.setTabletState(0);
+				// sigObj.clearTablet();
 			} else {
 				log.warn("Attempted to clear LCD but job id of " + currentJobId
 						+ " is present");
@@ -182,8 +184,17 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 		public void run() {
 			log.info("TopazTimerTask running");
 
+			int sigPoints = 0;
+			try {
+				sigPoints = sigObj.getSignatureData().m_PointArray.length;
+			} catch (Exception ex) {
+				log.warn("Could not fetch signature data point length"
+						+ ", dropping back into loop", ex);
+				return;
+			}
+
 			// If we have no points at all ...
-			if (sigObj.getSignatureData().m_PointArray.length == 0) {
+			if (sigPoints == 0) {
 				// ... and we have been waiting for less than
 				// SIGNATURE_INITIAL_WAIT ms
 				if ((System.currentTimeMillis() - requestTime) < SIGNATURE_INITIAL_WAIT) {
@@ -205,10 +216,12 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 					job = null;
 					numSigPoints = 0;
 					lastSeen.set(0L);
+
 					log.info("Clearing tablet.");
-					sigObj.setEnabled(false);
-					sigObj.setTabletState(0);
-					sigObj.clearTablet();
+					clearTabletLCD();
+					// sigObj.setEnabled(false);
+					// sigObj.setTabletState(0);
+					// sigObj.clearTablet();
 
 					log.info("Cancelling timer.");
 					cancel();
@@ -223,13 +236,13 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 
 			log.debug("numSigPoints = " + numSigPoints
 					+ " / sigObj.getSignatureData().m_PointArray.length = "
-					+ sigObj.getSignatureData().m_PointArray.length);
-			if (sigObj.getSignatureData().m_PointArray.length > numSigPoints) {
+					+ sigPoints);
+			if (sigPoints > numSigPoints) {
 				// Bump up when an event was last seen to now.
 				lastSeen.set(System.currentTimeMillis());
 
 				// ... and increase the counter
-				numSigPoints = sigObj.getSignatureData().m_PointArray.length;
+				numSigPoints = sigPoints;
 
 				// Wait until next task execution
 				log
@@ -237,8 +250,14 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 				return;
 			}
 
+			if ((System.currentTimeMillis() - lastSeen.get()) < SIGNATURE_MAXIMUM_WAIT) {
+				log
+						.debug("Dropping back into loop, need to wait a little longer.");
+				return;
+			}
+
 			// Test to see if anything is there
-			if (sigObj.getSignatureData().m_PointArray.length < SIGNATURE_MINIMUM_POINTS) {
+			if (sigPoints < SIGNATURE_MINIMUM_POINTS) {
 				// Wait until next task execution
 				log.debug("Not enough points recorded, back to waiting");
 				return;
@@ -258,9 +277,10 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 			numSigPoints = 0;
 			lastSeen.set(0L);
 			log.info("Clearing pad.");
-			sigObj.setEnabled(false);
-			sigObj.setTabletState(0);
-			sigObj.clearTablet();
+			clearTabletLCD();
+			// sigObj.setEnabled(false);
+			// sigObj.setTabletState(0);
+			// sigObj.clearTablet();
 
 			// Just cancel timer task, otherwise the <Timer> object isn't
 			// reusable.
@@ -326,9 +346,10 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 			timer.cancel();
 		}
 		if (sigObj != null) {
-			sigObj.setEnabled(false);
-			sigObj.setTabletState(0);
-			sigObj.clearTablet();
+			clearTabletLCD();
+			// sigObj.setEnabled(false);
+			// sigObj.setTabletState(0);
+			// sigObj.clearTablet();
 		}
 	}
 
@@ -378,7 +399,8 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 		try {
 			log.info("X size = " + sigObj.getTabletLCDXSize() + ", Y size = "
 					+ sigObj.getTabletLCDYSize());
-			sigObj.lcdRefresh(0, 0, 0, 640, 480);
+			sigObj.lcdRefresh(0, 0, 0, sigObj.getTabletLCDXSize(), sigObj
+					.getTabletLCDYSize());
 			sigObj.setLCDCaptureMode(LcdCaptureMode.ENABLED);
 			sigObj.lcdWriteString(LcdWriteDestination.FOREGROUND,
 					LcdWriteMode.WRITE_OPAQUE, 0, 0, "Please sign below",
@@ -397,6 +419,17 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 				SIGNATURE_WAIT_DURATION);
 
 		return true;
+	}
+
+	protected void clearTabletLCD() {
+		if (sigObj != null) {
+			sigObj.lcdRefresh(0, 0, 0, sigObj.getTabletLCDXSize(), sigObj
+					.getTabletLCDYSize());
+			sigObj.setLCDCaptureMode(LcdCaptureMode.NO_LCD);
+			sigObj.setEnabled(false);
+			sigObj.setTabletState(0);
+			sigObj.clearTablet();
+		}
 	}
 
 	protected void writeTabletMessage(int x, int y, String message) {
@@ -449,14 +482,32 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 
 		// Create PNG image
 		try {
-			sigObj.setImageJustifyMode(5);
-			sigObj.setImagePenWidth(10);
 			BufferedImage sigImage = sigObj.sigImage();
 			int w = sigImage.getWidth(null);
 			int h = sigImage.getHeight(null);
-			int[] pixels = new int[(w * h) * 2];
+			log.info("getWidth/getHeight returned : w = " + w + ", h = " + h);
+			try {
+				w = sigObj.getTabletLCDXSize();
+				h = sigObj.getTabletLCDYSize();
+				log.info("Used LCD to get dimensions of w = " + w + ", h = "
+						+ h);
+			} catch (Exception ex) {
+				log.warn(ex);
+			}
+
+			sigObj.setImageJustifyMode(5);
+			sigObj.setImagePenWidth(1);
+			sigObj.setImageXSize(w);
+			sigObj.setImageYSize(h);
+
+			// Redundant.
+			sigImage = sigObj.sigImage();
+
+			int[] pixels = new int[((w * h) * 2) + 1];
+			log.debug("pixel array length = " + pixels.length);
 			sigImage.setRGB(0, 0, 0, 0, pixels, 0, 0);
 			ByteArrayOutputStream fos = new ByteArrayOutputStream();
+
 			try {
 				ImageIO.write(sigImage, "png", fos);
 			} catch (IOException ex) {
@@ -488,6 +539,8 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 		} else {
 			log
 					.info("Skipping persistent job store write, as this is a test case.");
+			log.debug("length = " + job.getSignatureImage().length
+					+ ", data = " + new String(job.getSignatureImage()));
 		}
 	}
 

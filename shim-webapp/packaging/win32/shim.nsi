@@ -21,7 +21,7 @@
   SetCompressor /SOLID lzma
 
   Name "FreeSHIM"
-  !define VERSION 0.1.0.0
+  !define VERSION 0.1.0.1
 
   ;Product information
   VIAddVersionKey ProductName "FreeSHIM"
@@ -676,7 +676,7 @@ Function configure
   
   StrCmp $R1 "" +4 0  ; Blank user - do not add anything to tomcat-users.xml
   StrCmp $R2 "" +3 0  ; Blank password - do not add anything to tomcat-users.xml
-  StrCpy $R5 '<user name="$R1" password="$R2" roles="admin,manager" />'
+  StrCpy $R5 '<user name="$R1" password="$R2" roles="admin,manager,default" />'
   DetailPrint 'Admin user added: "$R1"'
   
 Silent:

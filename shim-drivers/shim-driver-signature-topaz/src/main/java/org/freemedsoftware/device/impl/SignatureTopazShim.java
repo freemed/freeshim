@@ -210,6 +210,9 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 							+ (System.currentTimeMillis() - requestTime)
 							+ " ms, aborting.");
 
+					// Cancel the job.
+					cancelJob();
+
 					// Clear everything
 					log.info("Clearing signature job id");
 					currentJobId = null;
@@ -545,6 +548,22 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 	}
 
 	public void handleTabletTimerEvent(SigPlusEvent0 event) {
+	}
+
+	public void cancelJob() {
+		log.info("Recording error job status");
+		job.setStatus(JobStoreItem.STATUS_ERROR);
+		if (job.getId() != 0) {
+			log.info("Writing to persistent job store");
+			try {
+				PersistentJobStoreDAO.update(job);
+			} catch (Exception e) {
+				log.error("Failed to write", e);
+			}
+		} else {
+			log
+					.info("Skipping persistent job store write, as this is a test case.");
+		}
 	}
 
 	/**

@@ -12,6 +12,7 @@
     <module>shim-driver-label-escpos</module>
     <module>shim-driver-signature-dummy</module>
     <module>shim-driver-signature-topaz</module>
+    <module>shim-driver-dosing-scilog</module>
   </modules>
   <dependencies>
     <dependency>

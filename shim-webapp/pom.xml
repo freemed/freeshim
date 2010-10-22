@@ -66,6 +66,13 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.freemedsoftware</groupId>
+			<artifactId>shim-driver-dosing-scilog</artifactId>
+			<version>0.1-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>commons-configuration</groupId>
 			<artifactId>commons-configuration</artifactId>
 			<version>1.6</version>

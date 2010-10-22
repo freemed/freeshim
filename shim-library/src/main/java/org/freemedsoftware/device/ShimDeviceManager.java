@@ -106,6 +106,9 @@ public class ShimDeviceManager<T extends DeviceInterface> implements Runnable {
 		if (deviceInstance instanceof LabelPrinterInterface) {
 			initLabelPrinterDevice();
 		}
+		if (deviceInstance instanceof DosingPumpInterface) {
+			initDosingDevice();
+		}
 	}
 
 	/**
@@ -115,6 +118,14 @@ public class ShimDeviceManager<T extends DeviceInterface> implements Runnable {
 	 */
 	public T getDeviceInstance() {
 		return deviceInstance;
+	}
+
+	protected void initDosingDevice() throws Exception {
+		log.info("initDosingDevice()");
+		DosingPumpInterface sDevice = (DosingPumpInterface) deviceInstance;
+		log.info("Running device init");
+		sDevice.init();
+		persistentThread = new Thread(this);
 	}
 
 	protected void initSignatureDevice() throws Exception {

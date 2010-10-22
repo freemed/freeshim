@@ -31,6 +31,7 @@ import javax.jws.WebParam;
 import javax.jws.WebService;
 import javax.ws.rs.PathParam;
 
+import org.freemedsoftware.device.DosingPumpCommand;
 import org.freemedsoftware.device.JobStoreItem;
 import org.freemedsoftware.shim.exception.DeviceNotAvailableException;
 
@@ -57,6 +58,11 @@ public interface ShimService {
 
 	public JobStoreItem getJobItem(
 			@PathParam("requestId") @WebParam(name = "requestId") Integer requestId)
+			throws Exception;
+
+	public String requestDosingAction(
+			@PathParam("command") @WebParam(name = "command") DosingPumpCommand command,
+			@PathParam("param") @WebParam(name = "param") String param)
 			throws Exception;
 
 	public List<ShimDeviceInformation> getDevices();

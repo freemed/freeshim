@@ -35,6 +35,8 @@ import javax.ws.rs.Produces;
 import javax.xml.ws.WebServiceContext;
 
 import org.apache.log4j.Logger;
+import org.freemedsoftware.device.DosingPumpCommand;
+import org.freemedsoftware.device.DosingPumpInterface;
 import org.freemedsoftware.device.JobStoreItem;
 import org.freemedsoftware.device.LabelPrinterInterface;
 import org.freemedsoftware.device.PersistentJobStoreDAO;
@@ -109,6 +111,51 @@ public class ShimServiceImpl implements ShimService {
 			throw new DeviceNotAvailableException();
 		}
 		return itemId;
+	}
+
+	@GET
+	@Path("dosing/{command}/{param}")
+	@Produces("application/json")
+	@Override
+	public String requestDosingAction(DosingPumpCommand command, String param)
+			throws Exception {
+		ShimDeviceManager<DosingPumpInterface> manager = MasterControlServlet
+				.getDosingPumpDeviceManager();
+		if (manager == null) {
+			throw new DeviceNotAvailableException();
+		}
+		if (command == DosingPumpCommand.DISPENSE) {
+			return manager.getDeviceInstance().dispenseDose(
+					Integer.parseInt(param));
+		}
+		if (command == DosingPumpCommand.CLEAR_CLOSING) {
+			manager.getDeviceInstance().clearPumpForClosing();
+			return "OK";
+		}
+		if (command == DosingPumpCommand.CLEAR_OPENING) {
+			manager.getDeviceInstance().clearPumpForOpening();
+			return "OK";
+		}
+		if (command == DosingPumpCommand.GET_INTERVAL) {
+			return manager.getDeviceInstance().getPumpTimeInterval().toString();
+		}
+		if (command == DosingPumpCommand.GET_STATUS) {
+			return manager.getDeviceInstance().getPumpStatus();
+		}
+		if (command == DosingPumpCommand.PRIME) {
+			manager.getDeviceInstance().primePump();
+			return "OK";
+		}
+		if (command == DosingPumpCommand.SET_INTERVAL) {
+			manager.getDeviceInstance().primePump();
+			return "OK";
+		}
+
+		if (command != null) {
+			throw new Exception("Invalid command given!");
+		} else {
+			return "NULL";
+		}
 	}
 
 	@GET

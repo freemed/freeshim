@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServlet;
 
 import org.apache.commons.configuration.CompositeConfiguration;
 import org.apache.log4j.Logger;
+import org.freemedsoftware.device.DosingPumpInterface;
 import org.freemedsoftware.device.JobStoreItem;
 import org.freemedsoftware.device.LabelPrinterInterface;
 import org.freemedsoftware.device.PersistentJobStoreDAO;
@@ -52,6 +53,8 @@ public class MasterControlServlet extends HttpServlet {
 	protected final int THREAD_SLEEP_TIME = 250;
 
 	protected CompositeConfiguration config = null;
+
+	protected static ShimDeviceManager<DosingPumpInterface> dosingPumpDeviceManager = null;
 
 	protected static ShimDeviceManager<SignatureInterface> signatureDeviceManager = null;
 
@@ -121,6 +124,29 @@ public class MasterControlServlet extends HttpServlet {
 				logger.debug("running init() for driver");
 				if (signatureDeviceManager == null) {
 					logger.error("Signature manager is null!!");
+				}
+				signatureDeviceManager.init();
+			} catch (Exception e) {
+				logger.error(e);
+			}
+		} else {
+			logger.warn("No signature pad driver specified, skipping.");
+		}
+
+		// Initialize signature pad if driver is defined
+
+		String dosingPumpDriver = config.getString("driver.dosingpump");
+		if (dosingPumpDriver != null) {
+			logger.info("Initializing dosing pump driver " + dosingPumpDriver);
+			try {
+				logger.debug("instantiating driver");
+				dosingPumpDeviceManager = new ShimDeviceManager<DosingPumpInterface>(
+						dosingPumpDriver);
+				dosingPumpDeviceManager.getDeviceInstance().configure(
+						driverConfig);
+				logger.debug("running init() for driver");
+				if (dosingPumpDeviceManager == null) {
+					logger.error("Dosing pump manager is null!!");
 				}
 				signatureDeviceManager.init();
 			} catch (Exception e) {
@@ -252,6 +278,10 @@ public class MasterControlServlet extends HttpServlet {
 			}
 
 		}, THREAD_SLEEP_TIME, THREAD_SLEEP_TIME);
+	}
+
+	public static ShimDeviceManager<DosingPumpInterface> getDosingPumpDeviceManager() {
+		return dosingPumpDeviceManager;
 	}
 
 	public static ShimDeviceManager<SignatureInterface> getSignatureDeviceManager() {

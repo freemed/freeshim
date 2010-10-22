@@ -78,8 +78,8 @@ public class DosingPumpScilogShim implements DosingPumpInterface {
 
 	@Override
 	public List<String> getConfigurationOptions() {
-		return Arrays.asList(new String[] { "pump.port", "pump.baud",
-				"pump.timeout" });
+		return Arrays.asList(new String[] { "scilog.port", "scilog.baud",
+				"scilog.timeout" });
 	}
 
 	@SuppressWarnings("unchecked")
@@ -90,6 +90,10 @@ public class DosingPumpScilogShim implements DosingPumpInterface {
 
 		// log.info("Changing java.library.path for rxtx");
 		// System.setProperty("java.library.path", getRealPath("/WEB-INF/lib"));
+
+		if (config.get("scilog.enabled").equals("false")) {
+			throw new Exception("Skipping dosing pump, scilog.enabled=false");
+		}
 
 		// Display available ports
 		log.info("Scanning for available ports");
@@ -104,11 +108,11 @@ public class DosingPumpScilogShim implements DosingPumpInterface {
 		}
 
 		serialInterface = new SerialInterface();
-		log.info("opening pump.port = " + config.get("pump.port"));
+		log.info("opening pump.port = " + config.get("scilog.port"));
 		try {
-			serialInterface.open((String) config.get("pump.port"), Integer
-					.parseInt((String) config.get("pump.baud")), Integer
-					.parseInt((String) config.get("pump.timeout")));
+			serialInterface.open((String) config.get("scilog.port"), Integer
+					.parseInt((String) config.get("scilog.baud")), Integer
+					.parseInt((String) config.get("scilog.timeout")));
 		} catch (NoSuchPortException e) {
 			log.error(e);
 		} catch (PortInUseException e) {
@@ -170,6 +174,42 @@ public class DosingPumpScilogShim implements DosingPumpInterface {
 			return out.substring(0, out.indexOf(SerialInterface.LF)).trim();
 		}
 		return out.trim();
+	}
+
+	@Override
+	public void clearPumpForClosing() throws Exception {
+		sendCommandToPump("E");
+	}
+
+	@Override
+	public void clearPumpForOpening() throws Exception {
+		sendCommandToPump("P");
+	}
+
+	@Override
+	public String dispenseDose(Integer units) throws Exception {
+		return sendCommandToPump("V" + units.toString());
+	}
+
+	@Override
+	public String getPumpStatus() throws Exception {
+		return sendCommandToPump("S");
+	}
+
+	@Override
+	public Integer getPumpTimeInterval() throws Exception {
+		String x = sendCommandToPump("T");
+		return Integer.parseInt(x);
+	}
+
+	@Override
+	public void primePump() throws Exception {
+		sendCommandToPump("P");
+	}
+
+	@Override
+	public void setPumpTimeInterval(Integer interval) throws Exception {
+		sendCommandToPump("C" + interval.toString());
 	}
 
 }

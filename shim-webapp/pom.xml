@@ -117,6 +117,12 @@
 				<configuration>
 					<scanIntervalSeconds>10</scanIntervalSeconds>
 					<stopPort>9999</stopPort>
+					<userRealms>
+						<userRealm implementation="org.mortbay.jetty.security.HashUserRealm">
+							<name>default</name>
+							<config>jetty-realm.properties</config>
+						</userRealm>
+					</userRealms>
 				</configuration>
 			</plugin>
 

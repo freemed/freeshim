@@ -1,0 +1,53 @@
+<#ftl strip_whitespace=true>
+<#-- 
+ $Id$
+ 
+ Authors:
+      Jeff Buchbinder <jeff@freemedsoftware.org>
+ 
+ FreeMED Electronic Medical Record / Practice Management System
+ Copyright (C) 1999-2010 FreeMED Software Foundation
+ 
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. 
+-->
+<#--	Length of non-warning label portion -->
+<#assign linelength="632">
+<#--       Begin command -->
+${esc}A
+<#--       Set 4" x 1" -->
+${esc}A101010812
+<#--       Print header with phone number -->
+<#--       5W x 9H proportional font = XU -->
+${esc}H0030${esc}V0010${esc}XS<#-- -->${facility}
+${esc}H0400${esc}V0010${esc}XS<#-- -->Tel: ${phone}
+${esc}H0030${esc}V0025${esc}XU<#-- -->${address}
+${esc}H0000${esc}V0035${esc}FW02H0${linelength}<#-- 2 width horizontal line -->
+<#--       Patient name, id and dosage -->
+${esc}H0030${esc}V0040${esc}XM<#-- -->${patientid}
+${esc}H0400${esc}V0040${esc}XM<#-- -->DOB:${patientdob}
+${esc}H0030${esc}V0100${esc}XS<#-- -->Test:${testname}
+${esc}H0030${esc}V0115${esc}XS${substances}
+<#--       Dosage date and lot information -->
+${esc}H0050${esc}V0070${esc}XS<#-- -->Date : ${testdate}
+<#--       Doctor and expiration -->
+${esc}H0000${esc}V0129${esc}FW01H0<#-- -->${linelength}<#-- 1 width horizontal line -->
+${esc}H0030${esc}V0140${esc}XS<#-- -->Doctor: ${provider}
+${esc}H0400${esc}V0140${esc}XS<#-- -->Counselor : ${counselor}
+<#--       Warning at the bottom -->
+${esc}H0000${esc}V0160${esc}FW02H0${linelength}<#-- 2 width horizontal line -->
+${esc}L0101<#-- reset expansion of characters -->
+${esc}%0<#-- reset rotation-->
+<#--       End command -->
+${esc}Z\x0003

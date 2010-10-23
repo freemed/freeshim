@@ -1,0 +1,80 @@
+<#ftl strip_whitespace=true>
+<#-- 
+ $Id$
+ 
+ Authors:
+      Jeff Buchbinder <jeff@freemedsoftware.org>
+ 
+ FreeMED Electronic Medical Record / Practice Management System
+ Copyright (C) 1999-2010 FreeMED Software Foundation
+ 
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. 
+-->
+<#--	Length of non-warning label portion -->
+<#assign linelength="632">
+<#--	Begin command -->
+${esc}A
+<#--	Set 4" x 1" -->
+${esc}A1<#-- -->0101<#-- -->0812
+<#--	Print header with phone number -->
+<#--	5W x 9H proportional font = XU -->
+${esc}H0030${esc}V0010${esc}XS<#-- -->${facility}
+${esc}H0400${esc}V0010${esc}XS<#-- -->Tel: ${phone}
+${esc}H0030${esc}V0025${esc}XU<#-- -->${address}
+${esc}H0000${esc}V0035${esc}FW02H0${linelength}<#-- 2 width horizontal line -->
+
+<#--	Patient name, id and dosage -->
+${esc}H0030${esc}V0040${esc}XM<#-- -->${patientname}
+${esc}H0400${esc}V0040${esc}XM<#-- -->ID #${patientid}
+${esc}H0400${esc}V0070${esc}XM<#-- -->Dose: ${dosage} mg
+
+<#--	Dosage date and lot information -->
+${esc}H0050${esc}V0070${esc}XS<#-- -->Take on : ${dosagedate}
+${esc}H0050${esc}V0088${esc}XS<#-- -->Lot     : ${lotnumber}
+<#--	Doctor and expiration -->
+${esc}H0000${esc}V0115${esc}FW01H0${linelength}<#-- 1 width horizontal line -->
+${esc}H0030${esc}V0120${esc}XS<#-- -->Doctor: ${provider}
+${esc}H0400${esc}V0120${esc}XS<#-- -->Expires: ${expires}
+<#--	Warning at the bottom -->
+${esc}H0000${esc}V0140${esc}FW02H0${linelength}<#-- 2 width horizontal line -->
+${esc}H0030${esc}V0145${esc}XS<#-- -->Controlled substance: DANGEROUS unless used as directed
+<#-- Print the warning at the end of the label ( ${l} - 790 horizontal ) -->
+${esc}H0782${esc}V0000${esc}FW01V0170<#-- 1 width vertical line -->
+${esc}H0780${esc}V0005${esc}%3${esc}XU  CAUTION: Federal Law
+${esc}H0770${esc}V0005${esc}%3${esc}XU  PROHIBITS the transfer
+${esc}H0760${esc}V0005${esc}%3${esc}XU  of this drug to any
+${esc}H0750${esc}V0005${esc}%3${esc}XU  person other than the
+${esc}H0740${esc}V0005${esc}%3${esc}XU  patient for whom it
+${esc}H0730${esc}V0005${esc}%3${esc}XU  was prescribed.
+${esc}%0<#-- reset rotation -->
+${esc}H0720${esc}V0000${esc}FW01V0170<#-- 1 width vertical line -->
+${esc}H0718${esc}V0005${esc}L0201${esc}%3${esc}XU<#-- --> TAKE ENTIRE
+${esc}H0708${esc}V0005${esc}L0201${esc}%3${esc}XU<#-- -->   CONTENTS
+${esc}L0101<#-- reset expansion of characters -->
+${esc}%0<#-- reset rotation -->
+${esc}H0698${esc}V0000${esc}FW01V0170<#-- 1 width vertical line -->
+${esc}H0696${esc}V0005${esc}L0201${esc}%3${esc}XU<#-- -->  METHADONE:
+${esc}H0686${esc}V0005${esc}L0201${esc}%3${esc}XU<#-- --> KEEP OUT OF
+${esc}H0676${esc}V0005${esc}L0201${esc}%3${esc}XU<#-- -->   REACH OF
+${esc}H0666${esc}V0005${esc}L0201${esc}%3${esc}XU<#-- -->   CHILDREN
+${esc}L0101<#-- reset expansion of characters -->
+${esc}%0<#-- reset rotation -->
+${esc}H0656${esc}V0000${esc}FW01V0170<#-- 1 width vertical line -->
+${esc}H0654${esc}V0005${esc}L0201${esc}%3${esc}XU<#-- -->ORAL USE ONLY
+${esc}L0101<#-- reset expansion of characters -->
+${esc}%0<#-- reset rotation -->
+${esc}H0644${esc}V0000${esc}FW01V0170<#-- 1 width vertical line -->
+<#--	End command -->
+${esc}Z\x0003

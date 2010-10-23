@@ -21,6 +21,13 @@ Building:
    shim source so that all dependent libraries are built, etc. The final
    packaged version is available in ${SHIM}/shim-webapp/target/shim.war
 
+Testing:
+
+1) "mvn jetty:run" will launch an embedded Jetty instance on the default
+   port (8080), so the interface can be reached at
+
+   http://localhost:8080/shim-webapp/
+
 Installation:
 
 1) Copy "shim.war" from "target" into webapps directory of Tomcat
@@ -38,7 +45,8 @@ Installation:
 
 --- Installation with Debian packages/integration ---
 
-1) apt-get install tomcat5.5 sun-java6-jre
+1) Tomcat 5.5: apt-get install tomcat5.5 sun-java6-jre
+   Tomcat 6.x: apt-get install tomcat6 sun-java6-jre
 
 2) Copy librxtx*.so into /usr/lib/jvm/java-6-sun/jre/lib/$ARCH/
    (where $ARCH is amd64, i386, etc). You have to use rxtx v2.2pre2,
@@ -47,15 +55,20 @@ Installation:
    librxtx-java package, it's old.
 
 3) Copy shim.war from "target" into
-   /var/lib/tomcat5.5/webapps/ and make its owner "tomcat55"
+   /var/lib/tomcat5.5/webapps/ and make its owner "tomcat55" or
+   "tomcat" depending on the version.
 
-4) Append the following lines to /etc/default/tomcat5.5:
+4) Append the following lines to /etc/default/tomcat5.5 or
+   /etc/default/tomcat depending on the version:
 
    JAVA_HOME=/usr/lib/jvm/java-6-sun
    JAVA_OPTS=" -Dshim.properties=/etc/shim.properties "
    TOMCAT5_SECURITY=no
 
-5) Add credentials to /var/lib/tomcat5.5/conf/tomcat-users.xml like:
+   if there is already a JAVA_OPTS clause, add the -D... phrase to it.
+
+5) Add credentials to /var/lib/tomcat5.5/conf/tomcat-users.xml or
+   /var/lib/tomcat/conf/tomcat-users.xml like:
 
    <role rolename="default" />
    <user username="Administrator" password="password" roles="default" />
@@ -66,14 +79,20 @@ Installation:
    Make sure to copy the file to /etc/shim.properties when you
    have finished making your changes.
 
-7) Add the "tomcat55" user to the "lp" and "dialout" groups, and make
-   any necessary udev changes for Topaz signature pads, etc.
+7) Add the "tomcat55" or "tomcat" user (depending on the version) to
+   the "lp" and "dialout" groups, and make any necessary udev changes
+   for Topaz signature pads, etc.
 
 8) Start tomcat with:
 
-   /etc/init.d/tomcat5.5 restart
+   Tomcat 5.5: /etc/init.d/tomcat5.5 restart
+   Tomcat 6:   /etc/init.d/tomcat restart
 
 9) The URL for this instance will be:
 
+   Tomcat 5.5:
    http://${MACHINE-NAME-OR-IP}:8180/shim/services/ShimService?wsdl
+
+   Tomcat 6:
+   http://${MACHINE-NAME-OR-IP}:8080/shim/services/ShimService?wsdl
 

@@ -27,7 +27,7 @@
 
 	<!-- Service bean -->
 	<bean id="service" class="org.freemedsoftware.shim.ShimServiceImpl"
-		autowire="autodetect" />
+		autowire="byName" />
 
 	<!-- REST service definition -->
 	<jaxrs:server id="restServer" address="/rest/">

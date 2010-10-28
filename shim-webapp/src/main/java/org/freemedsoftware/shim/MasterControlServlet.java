@@ -148,12 +148,12 @@ public class MasterControlServlet extends HttpServlet {
 				if (dosingPumpDeviceManager == null) {
 					logger.error("Dosing pump manager is null!!");
 				}
-				signatureDeviceManager.init();
+				dosingPumpDeviceManager.init();
 			} catch (Exception e) {
 				logger.error(e);
 			}
 		} else {
-			logger.warn("No signature pad driver specified, skipping.");
+			logger.warn("No dosing pump driver specified, skipping.");
 		}
 
 		// Initialize label printer, if a driver is defined

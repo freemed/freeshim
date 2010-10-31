@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,9 +93,11 @@ public class LabelEscPosShim implements LabelPrinterInterface {
 			return;
 		}
 
-		String portName = (String) config.get("escpos.port");
-		Integer timeout = Integer.parseInt((String) config
-				.get("escpos.timeout"));
+		String portName = (String) config
+				.get("org.freemedsoftware.device.impl.LabelEscPosShim.port");
+		Integer timeout = Integer
+				.parseInt((String) config
+						.get("org.freemedsoftware.device.impl.LabelEscPosShim.timeout"));
 
 		log.info("Creating interface for " + portName + " with timeout "
 				+ timeout);
@@ -144,7 +147,9 @@ public class LabelEscPosShim implements LabelPrinterInterface {
 
 	@Override
 	public List<String> getConfigurationOptions() {
-		return null;
+		return Arrays.asList(new String[] {
+				"org.freemedsoftware.device.impl.LabelEscPosShim.port",
+				"org.freemedsoftware.device.impl.LabelEscPosShim.timeout" });
 	}
 
 	@Override

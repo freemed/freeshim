@@ -306,8 +306,10 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 
 	@Override
 	public List<String> getConfigurationOptions() {
-		return Arrays.asList(new String[] { "topaz.tabletModel",
-				"topaz.tabletPort" });
+		return Arrays
+				.asList(new String[] {
+						"org.freemedsoftware.device.impl.SignatureTopazShim.tabletModel",
+						"org.freemedsoftware.device.impl.SignatureTopazShim.tabletPort" });
 	}
 
 	@Override
@@ -328,8 +330,12 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 
 		// Pull from actual configuration
 		try {
-			sigObj.setTabletModel((String) config.get("topaz.tabletModel"));
-			sigObj.setTabletComPort((String) config.get("topaz.tabletPort"));
+			sigObj
+					.setTabletModel((String) config
+							.get("org.freemedsoftware.device.impl.SignatureTopazShim.tabletModel"));
+			sigObj
+					.setTabletComPort((String) config
+							.get("org.freemedsoftware.device.impl.SignatureTopazShim.tabletPort"));
 		} catch (Exception ex) {
 			log.error(ex);
 			throw ex;
@@ -576,8 +582,10 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 		BasicConfigurator.configure();
 		SignatureTopazShim s = new SignatureTopazShim();
 		HashMap<String, Object> c = new HashMap<String, Object>();
-		c.put("topaz.tabletModel", "SignatureGemLCD1X5");
-		c.put("topaz.tabletPort", "HID1"); // HID1 == "HSB" tablet HID port
+		c.put("org.freemedsoftware.device.impl.SignatureTopazShim.tabletModel",
+				"SignatureGemLCD1X5");
+		c.put("org.freemedsoftware.device.impl.SignatureTopazShim.tabletPort",
+				"HID1"); // HID1 == "HSB" tablet HID port
 		s.configure(c);
 		System.out.println("Initializing shim driver");
 		s.init();

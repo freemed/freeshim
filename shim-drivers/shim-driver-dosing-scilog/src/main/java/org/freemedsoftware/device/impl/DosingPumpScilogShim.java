@@ -24,28 +24,22 @@
 
 package org.freemedsoftware.device.impl;
 
-import gnu.io.CommPortIdentifier;
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
 import gnu.io.UnsupportedCommOperationException;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Timer;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.Logger;
 import org.freemedsoftware.device.DeviceCapability;
-import org.freemedsoftware.device.DosingPumpInterface;
+import org.freemedsoftware.device.DosingPumpSerialInterface;
 import org.freemedsoftware.device.JobStoreItem;
 import org.freemedsoftware.device.SerialInterface;
 import org.freemedsoftware.device.ShimDevice;
 
 @ShimDevice(name = "Scilog Dosing Pump Shim", capability = DeviceCapability.DEVICE_DOSING_PUMP)
-public class DosingPumpScilogShim implements DosingPumpInterface {
+public class DosingPumpScilogShim extends DosingPumpSerialInterface {
 
 	protected Logger log = Logger.getLogger(DosingPumpScilogShim.class);
 
@@ -57,87 +51,8 @@ public class DosingPumpScilogShim implements DosingPumpInterface {
 
 	public final static int PROCESSING_LENGTH = 5000;
 
-	protected HashMap<String, Object> config = new HashMap<String, Object>();
-
-	protected AtomicBoolean processing = new AtomicBoolean();
-
-	protected SerialInterface serialInterface = null;
-
-	@Override
-	public void close() throws Exception {
-		if (serialInterface != null) {
-			serialInterface.close();
-		}
-	}
-
-	@Override
-	public void configure(HashMap<String, Object> config) {
-		log.info("Loading configuration");
-		this.config = config;
-	}
-
-	@Override
-	public List<String> getConfigurationOptions() {
-		return Arrays.asList(new String[] { "scilog.port", "scilog.baud",
-				"scilog.timeout" });
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void init() throws Exception {
-		// Initially, set to "processing" so we don't have pigpiles.
-		processing.set(true);
-
-		// log.info("Changing java.library.path for rxtx");
-		// System.setProperty("java.library.path", getRealPath("/WEB-INF/lib"));
-
-		if (config.get("scilog.enabled").equals("false")) {
-			throw new Exception("Skipping dosing pump, scilog.enabled=false");
-		}
-
-		// Display available ports
-		log.info("Scanning for available ports");
-		Enumeration portList = (Enumeration) CommPortIdentifier
-				.getPortIdentifiers();
-		while (portList.hasMoreElements()) {
-			CommPortIdentifier portId = (CommPortIdentifier) portList
-					.nextElement();
-			if (portId.getPortType() == CommPortIdentifier.PORT_SERIAL) {
-				System.out.println("Found port: " + portId.getName());
-			}
-		}
-
-		serialInterface = new SerialInterface();
-		log.info("opening pump.port = " + config.get("scilog.port"));
-		try {
-			serialInterface.open((String) config.get("scilog.port"), Integer
-					.parseInt((String) config.get("scilog.baud")), Integer
-					.parseInt((String) config.get("scilog.timeout")));
-		} catch (NoSuchPortException e) {
-			log.error(e);
-		} catch (PortInUseException e) {
-			log.error(e);
-		} catch (UnsupportedCommOperationException e) {
-			log.error(e);
-		} catch (IOException e) {
-			log.error(e);
-		}
-		log.info("Pump opened");
-
-		// Unlock when we're ready to go.
-		processing.set(false);
-	}
-
-	@Override
-	public boolean initJobRequest(JobStoreItem item) throws Exception {
-		log
-				.warn("Currently unused (initJobRequest), as communication is synchronous");
-		return false;
-	}
-
-	@Override
-	public boolean isProcessing() {
-		return processing.get();
+	public DosingPumpScilogShim() {
+		setConfigName("org.freemedsoftware.device.impl.DosingPumpScilogShim");
 	}
 
 	/**

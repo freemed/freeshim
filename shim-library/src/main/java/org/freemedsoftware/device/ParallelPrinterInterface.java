@@ -59,7 +59,7 @@ public class ParallelPrinterInterface implements CommPortOwnershipListener,
 					.getPortIdentifier(portName);
 			portId.addPortOwnershipListener(this);
 			parallelPort = (ParallelPort) portId.open("Parallel", timeout);
-			parallelPort.setMode(ParallelPort.LPT_MODE_NIBBLE);
+			parallelPort.setMode(ParallelPort.LPT_MODE_ANY);
 			out = parallelPort.getOutputStream();
 			portStatus = PortStatus.OPEN;
 		}

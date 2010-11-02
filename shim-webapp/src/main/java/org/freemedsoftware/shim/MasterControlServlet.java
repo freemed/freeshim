@@ -260,12 +260,11 @@ public class MasterControlServlet extends HttpServlet {
 							.isProcessing()) {
 						try {
 							labelPrinterDeviceManager.getDeviceInstance()
-									.initJobRequest(signatureItem);
+									.initJobRequest(labelItem);
 
 							// Update with pending status
-							signatureItem
-									.setStatus(JobStoreItem.STATUS_PENDING);
-							PersistentJobStoreDAO.update(signatureItem);
+							labelItem.setStatus(JobStoreItem.STATUS_PENDING);
+							PersistentJobStoreDAO.update(labelItem);
 						} catch (Exception e) {
 							logger.error(e);
 						}

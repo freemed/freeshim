@@ -184,4 +184,17 @@ public class ShimServiceImpl implements ShimService {
 		return null;
 	}
 
+	/*
+	 * @GET
+	 * 
+	 * @Path("testmap")
+	 * 
+	 * @Produces("application/json")
+	 * 
+	 * @Override public HashMap<String, String> getTestMap() { HashMap<String,
+	 * String> test = new HashMap<String, String>(); test.put("key_a",
+	 * "value_a"); test.put("key_b", "value_b"); test.put("key_c", "value_c");
+	 * return test; }
+	 */
+
 }

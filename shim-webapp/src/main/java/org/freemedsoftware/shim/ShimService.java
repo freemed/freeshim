@@ -30,6 +30,7 @@ import java.util.List;
 import javax.jws.WebParam;
 import javax.jws.WebService;
 import javax.ws.rs.PathParam;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.freemedsoftware.device.DosingPumpCommand;
 import org.freemedsoftware.device.JobStoreItem;
@@ -38,13 +39,13 @@ import org.freemedsoftware.shim.exception.DeviceNotAvailableException;
 @WebService
 public interface ShimService {
 
-	public static int PROTOCOL_VERSION = 1;
+	public static int PROTOCOL_VERSION = 2;
 
 	public Integer getProtocolVersion();
 
 	public Integer requestLabel(
 			@PathParam("printTemplate") @WebParam(name = "printTemplate") String printTemplate,
-			@PathParam("printParameters") @WebParam(name = "printParameters") HashMap<String, String> printParameters,
+			@PathParam("printParameters") @WebParam(name = "printParameters") @XmlJavaTypeAdapter(HashMapXmlAdapter.class) HashMap<String, String> printParameters,
 			@PathParam("copyCount") @WebParam(name = "copyCount") Integer copyCount)
 			throws DeviceNotAvailableException;
 
@@ -64,6 +65,11 @@ public interface ShimService {
 			@PathParam("command") @WebParam(name = "command") DosingPumpCommand command,
 			@PathParam("param") @WebParam(name = "param") String param)
 			throws Exception;
+
+	/*
+	 * public @XmlJavaTypeAdapter(HashMapXmlAdapter.class) HashMap<String,
+	 * String> getTestMap();
+	 */
 
 	public List<ShimDeviceInformation> getDevices();
 

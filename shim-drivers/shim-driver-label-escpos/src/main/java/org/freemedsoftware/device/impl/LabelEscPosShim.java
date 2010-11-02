@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
-import java.util.TimerTask;
 
 import org.apache.log4j.Logger;
 import org.freemedsoftware.device.DeviceCapability;
@@ -65,24 +64,6 @@ public class LabelEscPosShim implements LabelPrinterInterface {
 	protected HashMap<String, Object> config = new HashMap<String, Object>();
 
 	protected ParallelPrinterInterface printerInterface = null;
-
-	protected class ProcessingTimerTask extends TimerTask {
-
-		@Override
-		public void run() {
-			item.setStatus(JobStoreItem.STATUS_COMPLETED);
-			try {
-				PersistentJobStoreDAO.update(item);
-			} catch (SqlJetException e) {
-				log.error(e);
-			}
-
-			// Clear job and item objects
-			jobId = null;
-			item = null;
-		}
-
-	}
 
 	@Override
 	public void init() throws Exception {
@@ -121,12 +102,36 @@ public class LabelEscPosShim implements LabelPrinterInterface {
 		this.item = item;
 
 		// Process item
-		printLabel(item.getPrintTemplate(), item.getPrintParameters(), item
-				.getPrintCount());
+		try {
+			printLabel(item.getPrintTemplate(), item.getPrintParameters(), item
+					.getPrintCount());
+		} catch (Exception e) {
+			// For debugging...
+			e.printStackTrace();
 
-		// Clear everything
-		this.item = null;
-		this.jobId = null;
+			// Attempt to update status to "ERROR"
+			item.setStatus(JobStoreItem.STATUS_ERROR);
+			try {
+				PersistentJobStoreDAO.update(item);
+			} catch (SqlJetException e2) {
+				log.error(e2);
+			}
+
+			// ... and pass this back.
+			throw e;
+		} finally {
+			// Clear everything
+			this.item = null;
+			this.jobId = null;
+		}
+
+		// Mark the task as completed if we've gotten this far
+		item.setStatus(JobStoreItem.STATUS_COMPLETED);
+		try {
+			PersistentJobStoreDAO.update(item);
+		} catch (SqlJetException e) {
+			log.error(e);
+		}
 
 		return true;
 	}

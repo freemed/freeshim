@@ -64,7 +64,7 @@ public class MasterControlServlet extends HttpServlet {
 
 	public void init() throws ServletException {
 		logger.info("MasterControlServlet initializing");
-
+		
 		logger.info("Loading configuration");
 		Configuration.setServletContext(this);
 		Configuration.loadConfiguration();

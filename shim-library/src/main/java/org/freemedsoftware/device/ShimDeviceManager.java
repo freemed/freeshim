@@ -45,8 +45,28 @@ public class ShimDeviceManager<T extends DeviceInterface> implements Runnable {
 
 	protected Thread persistentThread = null;
 
+	protected boolean active = false;
+
+	protected String className = null;
+
 	public ShimDeviceManager() throws InstantiationException,
 			IllegalAccessException, ClassNotFoundException {
+	}
+
+	public boolean getActive() {
+		return this.active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
+	public String getClassName() {
+		return this.className;
+	}
+
+	public void setClassName(String className) {
+		this.className = className;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -55,6 +75,7 @@ public class ShimDeviceManager<T extends DeviceInterface> implements Runnable {
 		if (className == null) {
 			throw new InstantiationException("no class name given");
 		}
+		setClassName(className);
 		deviceInstance = (T) Class.forName(className).newInstance();
 	}
 
@@ -109,6 +130,9 @@ public class ShimDeviceManager<T extends DeviceInterface> implements Runnable {
 		if (deviceInstance instanceof DosingPumpInterface) {
 			initDosingDevice();
 		}
+
+		// Set active to true
+		setActive(true);
 	}
 
 	/**
@@ -156,6 +180,7 @@ public class ShimDeviceManager<T extends DeviceInterface> implements Runnable {
 		if (persistentThread != null) {
 			persistentThread.interrupt();
 		}
+		setActive(false);
 	}
 
 	@Override

@@ -54,19 +54,28 @@
 		<th>DOSING_PUMP</th>
 		<td><%= s.getDosingPumpDeviceManager().getClassName() %></td>
 		<td><%= s.getDosingPumpDeviceManager().getActive() %></td>
-		<td></td>
+		<td><form method="POST" action="control.jsp">
+			<input type="hidden" name="device" value="DOSING_PUMP"/>
+			<input type="submit" value="Stop/Start"/>
+		</form></td>
 	</tr>
 	<tr>
 		<th>SIGNATURE</th>
 		<td><%= s.getSignatureDeviceManager().getClassName() %></td>
 		<td><%= s.getSignatureDeviceManager().getActive() %></td>
-		<td></td>
+		<td><form method="POST" action="control.jsp">
+			<input type="hidden" name="device" value="SIGNATURE"/>
+			<input type="submit" value="Stop/Start"/>
+		</form></td>
 	</tr>
 	<tr>
 		<th>LABEL</th>
 		<td><%= s.getLabelPrinterDeviceManager().getClassName() %></td>
 		<td><%= s.getLabelPrinterDeviceManager().getActive() %></td>
-		<td></td>
+		<td><form method="POST" action="control.jsp">
+			<input type="hidden" name="device" value="LABEL"/>
+			<input type="submit" value="Stop/Start"/>
+		</form></td>
 	</tr>
 </table>
 

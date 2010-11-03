@@ -1,5 +1,5 @@
 <%-- 
- * $Id: index.jsp 394 2010-04-23 15:12:34Z jeff $
+ * $Id$
  *
  * Authors:
  *      Jeff Buchbinder <jeff@freemedsoftware.org>

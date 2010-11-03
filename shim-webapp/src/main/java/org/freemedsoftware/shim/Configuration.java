@@ -26,8 +26,6 @@ package org.freemedsoftware.shim;
 
 import java.io.File;
 
-import javax.servlet.http.HttpServlet;
-
 import org.apache.commons.configuration.CompositeConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -44,14 +42,14 @@ public class Configuration {
 
 	static final Logger log = Logger.getLogger(Configuration.class);
 
-	protected static HttpServlet servletContext = null;
+	protected static MasterControlServlet servletContext = null;
 
 	/**
 	 * Get servlet object.
 	 * 
 	 * @return
 	 */
-	public static HttpServlet getServletContext() {
+	public static MasterControlServlet getServletContext() {
 		return servletContext;
 	}
 
@@ -60,7 +58,7 @@ public class Configuration {
 	 * 
 	 * @param hS
 	 */
-	public static void setServletContext(HttpServlet hS) {
+	public static void setServletContext(MasterControlServlet hS) {
 		servletContext = hS;
 	}
 

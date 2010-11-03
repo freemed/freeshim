@@ -37,6 +37,7 @@ import org.tmatesoft.sqljet.core.table.ISqlJetTable;
 import org.tmatesoft.sqljet.core.table.SqlJetDb;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 public class PersistentJobStoreDAO {
 
@@ -256,7 +257,7 @@ public class PersistentJobStoreDAO {
 		try {
 			return new Gson().toJson(map);
 		} catch (Exception ex) {
-			log.trace(ex);
+			log.debug(ex);
 			return "{}";
 		}
 	}
@@ -268,9 +269,10 @@ public class PersistentJobStoreDAO {
 				return (HashMap<String, String>) null;
 			}
 			return (HashMap<String, String>) new Gson().fromJson(raw,
-					HashMap.class);
+					new TypeToken<HashMap<String, String>>() {
+					}.getType());
 		} catch (Exception e) {
-			log.trace(e);
+			log.debug(e);
 			return (HashMap<String, String>) null;
 		}
 	}

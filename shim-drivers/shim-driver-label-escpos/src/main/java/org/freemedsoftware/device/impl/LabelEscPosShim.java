@@ -25,14 +25,12 @@
 package org.freemedsoftware.device.impl;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 
 import org.apache.log4j.Logger;
@@ -162,8 +160,8 @@ public class LabelEscPosShim implements LabelPrinterInterface {
 		return (jobId != null);
 	}
 
-	protected int printLabel(String printTemplate, Map<String, String> values,
-			Integer copies) throws IOException {
+	protected int printLabel(String printTemplate,
+			HashMap<String, String> values, Integer copies) throws IOException {
 		// Get template configuration
 		freemarker.template.Configuration cfg = this
 				.getFreemarkerConfiguration();
@@ -174,7 +172,7 @@ public class LabelEscPosShim implements LabelPrinterInterface {
 		}
 		values.put("esc", "\u001b");
 
-		Template template = cfg.getTemplate(printTemplate);
+		Template template = cfg.getTemplate(printTemplate + ".template");
 
 		// Write template
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -202,8 +200,7 @@ public class LabelEscPosShim implements LabelPrinterInterface {
 	protected freemarker.template.Configuration getFreemarkerConfiguration()
 			throws IOException {
 		freemarker.template.Configuration cfg = new freemarker.template.Configuration();
-		cfg.setDirectoryForTemplateLoading(new File(this.getClass()
-				.getClassLoader().getResource("/templates").toExternalForm()));
+		cfg.setClassForTemplateLoading(getClass(), "/templates");
 		cfg.setObjectWrapper(new DefaultObjectWrapper());
 		return cfg;
 	}

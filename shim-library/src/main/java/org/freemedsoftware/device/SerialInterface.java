@@ -113,11 +113,12 @@ public class SerialInterface {
 	public void close() {
 		if (portStatus == PortStatus.OPEN) {
 			portStatus = PortStatus.CLOSED;
-			try {
-				in.close();
-				out.close();
-			} catch (IOException ex) {
-			}
+		}
+		try {
+			in.close();
+			out.close();
+			serialPort.close();
+		} catch (IOException ex) {
 		}
 	}
 }

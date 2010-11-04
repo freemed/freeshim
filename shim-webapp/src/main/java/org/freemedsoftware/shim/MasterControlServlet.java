@@ -64,7 +64,7 @@ public class MasterControlServlet extends HttpServlet {
 
 	public void init() throws ServletException {
 		logger.info("MasterControlServlet initializing");
-		
+
 		logger.info("Loading configuration");
 		Configuration.setServletContext(this);
 		Configuration.loadConfiguration();
@@ -305,6 +305,14 @@ public class MasterControlServlet extends HttpServlet {
 			logger.info("Closing label printer manager");
 			try {
 				labelPrinterDeviceManager.close();
+			} catch (Exception e) {
+				logger.warn(e);
+			}
+		}
+		if (dosingPumpDeviceManager != null) {
+			logger.info("Closing dosing pump manager");
+			try {
+				dosingPumpDeviceManager.close();
 			} catch (Exception e) {
 				logger.warn(e);
 			}

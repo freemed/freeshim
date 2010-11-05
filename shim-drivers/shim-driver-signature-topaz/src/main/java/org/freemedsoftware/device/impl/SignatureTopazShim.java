@@ -355,10 +355,12 @@ public class SignatureTopazShim implements SignatureInterface, SigPlusListener {
 			timer.cancel();
 		}
 		if (sigObj != null) {
+			log.info("Closing/clearing signature pad");
 			clearTabletLCD();
 			// sigObj.setEnabled(false);
 			// sigObj.setTabletState(0);
 			// sigObj.clearTablet();
+			sigObj = null;
 		}
 	}
 

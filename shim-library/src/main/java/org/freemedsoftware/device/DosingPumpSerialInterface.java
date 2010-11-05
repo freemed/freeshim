@@ -61,6 +61,7 @@ public abstract class DosingPumpSerialInterface implements DosingPumpInterface {
 	@Override
 	public void close() throws Exception {
 		if (serialInterface != null) {
+			log.info("Closing serial port for dosing pump");
 			serialInterface.close();
 		}
 	}

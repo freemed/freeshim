@@ -88,6 +88,7 @@ public class DosingPumpScilogShim extends DosingPumpSerialInterface {
 		} else if (out.indexOf(SerialInterface.LF) != -1) {
 			return out.substring(0, out.indexOf(SerialInterface.LF)).trim();
 		}
+		log.info("Returned " + out.trim());
 		return out.trim();
 	}
 
@@ -98,6 +99,13 @@ public class DosingPumpScilogShim extends DosingPumpSerialInterface {
 
 	@Override
 	public void clearPumpForOpening() throws Exception {
+		sendCommandToPump("C"
+				+ (String) config
+						.get("org.freemedsoftware.device.impl.DosingPumpScilogShim.emptyPumpDuration"));
+		sendCommandToPump("E");
+		sendCommandToPump("C"
+				+ (String) config
+						.get("org.freemedsoftware.device.impl.DosingPumpScilogShim.primePumpDuration"));
 		sendCommandToPump("P");
 	}
 
@@ -113,7 +121,7 @@ public class DosingPumpScilogShim extends DosingPumpSerialInterface {
 
 	@Override
 	public Integer getPumpTimeInterval() throws Exception {
-		String x = sendCommandToPump("T");
+		String x = sendCommandToPump("C");
 		return Integer.parseInt(x);
 	}
 
@@ -124,7 +132,7 @@ public class DosingPumpScilogShim extends DosingPumpSerialInterface {
 
 	@Override
 	public void setPumpTimeInterval(Integer interval) throws Exception {
-		sendCommandToPump("C" + interval.toString());
+		sendCommandToPump("T" + interval.toString());
 	}
 
 }

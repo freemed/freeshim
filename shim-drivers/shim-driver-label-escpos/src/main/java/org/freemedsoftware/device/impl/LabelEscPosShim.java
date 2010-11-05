@@ -136,7 +136,7 @@ public class LabelEscPosShim implements LabelPrinterInterface {
 
 	@Override
 	public void close() throws Exception {
-		log.info("Close label printer");
+		log.info("Closing label printer");
 		timer.cancel();
 		if (printerInterface != null) {
 			printerInterface.close();

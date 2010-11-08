@@ -37,8 +37,8 @@
 </table>
 
 <%@ page import="java.util.*"%>
-<%@ page import="org.freemedsoftware.shim.Configuration"%>
-<%@ page import="org.freemedsoftware.shim.MasterControlServlet"%>
+<%@ page import="org.freemedsoftware.device.*"%>
+<%@ page import="org.freemedsoftware.shim.*"%>
 <%
 	MasterControlServlet s = Configuration.getServletContext();
 	ShimDeviceManager<DosingPumpInterface> dosingPumpDeviceManager = s.getDosingPumpDeviceManager();

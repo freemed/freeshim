@@ -41,6 +41,9 @@
 <%@ page import="org.freemedsoftware.shim.MasterControlServlet"%>
 <%
 	MasterControlServlet s = Configuration.getServletContext();
+	ShimDeviceManager<DosingPumpInterface> dosingPumpDeviceManager = s.getDosingPumpDeviceManager();
+	ShimDeviceManager<SignatureInterface> signatureDeviceManager = s.getSignatureDeviceManager();
+	ShimDeviceManager<LabelPrinterInterface> labelPrinterDeviceManager = s.getLabelPrinterDeviceManager();
 %>
 
 <table border="1" cellpadding="5">
@@ -52,8 +55,13 @@
 	</tr>
 	<tr>
 		<th>DOSING_PUMP</th>
-		<td><%= s.getDosingPumpDeviceManager().getClassName() %></td>
-		<td><%= s.getDosingPumpDeviceManager().getActive() %></td>
+		<% if (dosingPumpDeviceManager == null) { %>
+		<td>NO DRIVER LOADED</td>
+		<td>false</td>
+		<% } else { %>
+		<td><%= dosingPumpDeviceManager.getClassName() %></td>
+		<td><%= dosingPumpDeviceManager.getActive() %></td>
+		<% } %>
 		<td><form method="POST" action="control.jsp">
 			<input type="hidden" name="device" value="DOSING_PUMP"/>
 			<input type="submit" value="Stop/Start"/>
@@ -61,8 +69,13 @@
 	</tr>
 	<tr>
 		<th>SIGNATURE</th>
-		<td><%= s.getSignatureDeviceManager().getClassName() %></td>
-		<td><%= s.getSignatureDeviceManager().getActive() %></td>
+		<% if (signatureDeviceManager == null) { %>
+		<td>NO DRIVER LOADED</td>
+		<td>false</td>
+		<% } else { %>
+		<td><%= signatureDeviceManager.getClassName() %></td>
+		<td><%= signatureDeviceManager.getActive() %></td>
+		<% } %>
 		<td><form method="POST" action="control.jsp">
 			<input type="hidden" name="device" value="SIGNATURE"/>
 			<input type="submit" value="Stop/Start"/>
@@ -70,8 +83,13 @@
 	</tr>
 	<tr>
 		<th>LABEL</th>
-		<td><%= s.getLabelPrinterDeviceManager().getClassName() %></td>
-		<td><%= s.getLabelPrinterDeviceManager().getActive() %></td>
+		<% if (labelPrinterDeviceManager == null) { %>
+		<td>NO DRIVER LOADED</td>
+		<td>false</td>
+		<% } else { %>
+		<td><%= labelPrinterDeviceManager.getClassName() %></td>
+		<td><%= labelPrinterDeviceManager.getActive() %></td>
+		<% } %>
 		<td><form method="POST" action="control.jsp">
 			<input type="hidden" name="device" value="LABEL"/>
 			<input type="submit" value="Stop/Start"/>

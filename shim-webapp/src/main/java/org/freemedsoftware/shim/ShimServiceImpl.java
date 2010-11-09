@@ -132,12 +132,10 @@ public class ShimServiceImpl implements ShimService {
 			return manager.getDeviceInstance().getPumpStatus();
 		}
 		if (command == DosingPumpCommand.PRIME) {
-			manager.getDeviceInstance().primePump();
-			return "OK";
+			return manager.getDeviceInstance().primePump();
 		}
 		if (command == DosingPumpCommand.REVERSE) {
-			manager.getDeviceInstance().reversePump();
-			return "OK";
+			return manager.getDeviceInstance().reversePump();
 		}
 
 		if (command != null) {

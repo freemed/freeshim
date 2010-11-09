@@ -103,19 +103,19 @@ public class DosingPumpScilogShim extends DosingPumpSerialInterface {
 	}
 
 	@Override
-	public void primePump() throws Exception {
+	public String primePump() throws Exception {
 		sendCommandToPump("C"
 				+ (String) config
 						.get("org.freemedsoftware.device.impl.DosingPumpScilogShim.primePumpDuration"));
-		sendCommandToPump("P");
+		return sendCommandToPump("P");
 	}
 
 	@Override
-	public void reversePump() throws Exception {
+	public String reversePump() throws Exception {
 		sendCommandToPump("C"
 				+ (String) config
 						.get("org.freemedsoftware.device.impl.DosingPumpScilogShim.reversePumpDuration"));
-		sendCommandToPump("E");
+		return sendCommandToPump("E");
 	}
 
 }

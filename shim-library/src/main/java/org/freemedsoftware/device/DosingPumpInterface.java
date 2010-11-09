@@ -32,9 +32,9 @@ package org.freemedsoftware.device;
  */
 public interface DosingPumpInterface extends DeviceInterface {
 
-	public void primePump() throws Exception;
+	public String primePump() throws Exception;
 
-	public void reversePump() throws Exception;
+	public String reversePump() throws Exception;
 
 	public String getPumpStatus() throws Exception;
 

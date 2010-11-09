@@ -128,17 +128,6 @@ public class ShimServiceImpl implements ShimService {
 			return manager.getDeviceInstance().dispenseDose(
 					Integer.parseInt(param));
 		}
-		if (command == DosingPumpCommand.CLEAR_CLOSING) {
-			manager.getDeviceInstance().clearPumpForClosing();
-			return "OK";
-		}
-		if (command == DosingPumpCommand.CLEAR_OPENING) {
-			manager.getDeviceInstance().clearPumpForOpening();
-			return "OK";
-		}
-		if (command == DosingPumpCommand.GET_INTERVAL) {
-			return manager.getDeviceInstance().getPumpTimeInterval().toString();
-		}
 		if (command == DosingPumpCommand.GET_STATUS) {
 			return manager.getDeviceInstance().getPumpStatus();
 		}
@@ -146,8 +135,8 @@ public class ShimServiceImpl implements ShimService {
 			manager.getDeviceInstance().primePump();
 			return "OK";
 		}
-		if (command == DosingPumpCommand.SET_INTERVAL) {
-			manager.getDeviceInstance().primePump();
+		if (command == DosingPumpCommand.REVERSE) {
+			manager.getDeviceInstance().reversePump();
 			return "OK";
 		}
 

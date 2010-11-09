@@ -25,9 +25,8 @@
 package org.freemedsoftware.device;
 
 public enum DosingPumpCommand {
-	DISPENSE("DISPENSE"), CLEAR_OPENING("CLEAR_OPENING"), CLEAR_CLOSING(
-			"CLEAR_CLOSING"), PRIME("PRIME"), GET_STATUS("GET_STATUS"), GET_INTERVAL(
-			"GET_INTERVAL"), SET_INTERVAL("SET_INTERVAL");
+	DISPENSE("DISPENSE"), PRIME("PRIME"), GET_STATUS("GET_STATUS"), REVERSE(
+			"REVERSE");
 
 	private String txt = null;
 

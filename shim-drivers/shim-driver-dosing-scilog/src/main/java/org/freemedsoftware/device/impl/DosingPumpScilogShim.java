@@ -93,23 +93,6 @@ public class DosingPumpScilogShim extends DosingPumpSerialInterface {
 	}
 
 	@Override
-	public void clearPumpForClosing() throws Exception {
-		sendCommandToPump("E");
-	}
-
-	@Override
-	public void clearPumpForOpening() throws Exception {
-		sendCommandToPump("C"
-				+ (String) config
-						.get("org.freemedsoftware.device.impl.DosingPumpScilogShim.emptyPumpDuration"));
-		sendCommandToPump("E");
-		sendCommandToPump("C"
-				+ (String) config
-						.get("org.freemedsoftware.device.impl.DosingPumpScilogShim.primePumpDuration"));
-		sendCommandToPump("P");
-	}
-
-	@Override
 	public String dispenseDose(Integer units) throws Exception {
 		return sendCommandToPump("V" + units.toString());
 	}
@@ -120,19 +103,19 @@ public class DosingPumpScilogShim extends DosingPumpSerialInterface {
 	}
 
 	@Override
-	public Integer getPumpTimeInterval() throws Exception {
-		String x = sendCommandToPump("C");
-		return Integer.parseInt(x);
-	}
-
-	@Override
 	public void primePump() throws Exception {
+		sendCommandToPump("C"
+				+ (String) config
+						.get("org.freemedsoftware.device.impl.DosingPumpScilogShim.primePumpDuration"));
 		sendCommandToPump("P");
 	}
 
 	@Override
-	public void setPumpTimeInterval(Integer interval) throws Exception {
-		sendCommandToPump("T" + interval.toString());
+	public void reversePump() throws Exception {
+		sendCommandToPump("C"
+				+ (String) config
+						.get("org.freemedsoftware.device.impl.DosingPumpScilogShim.reversePumpDuration"));
+		sendCommandToPump("E");
 	}
 
 }

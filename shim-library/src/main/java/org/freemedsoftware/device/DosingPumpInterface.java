@@ -32,15 +32,9 @@ package org.freemedsoftware.device;
  */
 public interface DosingPumpInterface extends DeviceInterface {
 
-	public void clearPumpForOpening() throws Exception;
-
-	public void clearPumpForClosing() throws Exception;
-
 	public void primePump() throws Exception;
 
-	public Integer getPumpTimeInterval() throws Exception;
-
-	public void setPumpTimeInterval(Integer interval) throws Exception;
+	public void reversePump() throws Exception;
 
 	public String getPumpStatus() throws Exception;
 

@@ -29,7 +29,7 @@
   VIAddVersionKey LegalCopyright "Copyright (c) 1999-2010 FreeMED Software Foundation"
   VIAddVersionKey FileDescription "FreeSHIM Installer"
   VIAddVersionKey FileVersion "1.0"
-  VIAddVersionKey ProductVersion "0.1-SNAPSHOT"
+  VIAddVersionKey ProductVersion "0.1"
   VIAddVersionKey Comments "freeshim.org"
   VIAddVersionKey InternalName "freeshim-0.1-win32.exe"
   VIProductVersion ${VERSION}

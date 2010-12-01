@@ -6,7 +6,7 @@
   <groupId>org.freemedsoftware</groupId>
   <artifactId>shim</artifactId>
   <name>shim</name>
-  <version>0.1-SNAPSHOT</version>
+  <version>0.1</version>
   <packaging>pom</packaging>
   <modules>
     <module>shim-library</module>

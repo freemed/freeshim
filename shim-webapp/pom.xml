@@ -4,7 +4,7 @@
 	<groupId>org.freemedsoftware</groupId>
 	<artifactId>shim-webapp</artifactId>
 	<packaging>war</packaging>
-	<version>0.1-SNAPSHOT</version>
+	<version>0.1</version>
 	<name>shim-webapp</name>
 	<url>http://freemedsoftware.org</url>
 	<dependencies>
@@ -40,35 +40,35 @@
 		<dependency>
 			<groupId>org.freemedsoftware</groupId>
 			<artifactId>shim-library</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>0.1</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.freemedsoftware</groupId>
 			<artifactId>shim-driver-label-escpos</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>0.1</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.freemedsoftware</groupId>
 			<artifactId>shim-driver-signature-topaz</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>0.1</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.freemedsoftware</groupId>
 			<artifactId>shim-driver-signature-dummy</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>0.1</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.freemedsoftware</groupId>
 			<artifactId>shim-driver-dosing-scilog</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>0.1</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>

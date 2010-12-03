@@ -15,7 +15,11 @@ INSTALLATION
    device drivers, follow their respective README files for instructions
    on how to install their JNI libraries.
 
-3) Really, that's it. It's very simple. A more "in-depth" document for
+3) If you're using a serial port, you may have to run "setserial" on it,
+   or even bake that into your /etc/rc.local file to run on boot, otherwise
+   some dosing pumps, etc, may not work!
+
+4) Really, that's it. It's very simple. A more "in-depth" document for
    shim.war is located in shim-webapp/README !
 
 

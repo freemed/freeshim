@@ -24,5 +24,13 @@
         <include>*.war</include>
       </includes>
     </fileSet>
+    <fileSet>
+      <directory>shim-library/native</directory>
+      <outputDirectory>/native/library/</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>shim-drivers/shim-driver-signature-topaz/native</directory>
+      <outputDirectory>/native/topaz/</outputDirectory>
+    </fileSet>
   </fileSets>
 </assembly>

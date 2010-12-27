@@ -21,5 +21,5 @@ if [ ! -d apache-tomcat-${TOMCAT_VERSION} ]; then
 fi
 
 echo "Building package"
-~/.wine/drive_c/Program\ Files/NSIS/makensis.exe shim.nsi
+makensis shim.nsi
 

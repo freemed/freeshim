@@ -25,6 +25,13 @@
       </includes>
     </fileSet>
     <fileSet>
+      <directory>shim-webapp/src/main/webapp/WEB-INF</directory>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>shim-default.properties</include>
+      </includes>
+    </fileSet>
+    <fileSet>
       <directory>shim-library/native</directory>
       <outputDirectory>/native/library/</outputDirectory>
     </fileSet>

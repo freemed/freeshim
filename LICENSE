@@ -1,0 +1,48 @@
+$Id$
+FreeSHIM Licencing Information
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin St, Suite 500, Boston, MA 02110, USA.
+
+------------------------------------------------------------------------
+
+TOPAZ SYSTEMS DRIVER / SOFTWARE LICENSING INFORMATION:
+
+The closed-source (but freely available) Topaz JNI and Java JAR components
+included with the source code and/or distribution were downloaded from
+http://www.topazsystems.com/software/download/java/index.htm ; more
+information on licensing and use of their software and hardware is available
+at http://www.topazsystems.com/information/legal.htm 
+
+The pertinent sections of that document are:
+
+Any software that is available on this Site ("Software") is the copyrighted
+work of Topaz Systems, Inc. and/or its licensors. Copying or reproducing the
+Software to any other server or location for further reproduction or
+redistribution is prohibited, unless such reproduction or redistribution is
+permitted by a license agreement accompanying such Software. You may not
+attempt to decompile or reverse-engineer the Software unless otherwise
+permitted by law. Use of the Software is subject to the license terms of any
+license agreement that may accompany or is provided with the Software.
+
+WITHOUT LIMITING THE FOREGOING, THE SOFTWARE IS WARRANTED, IF AT ALL, ONLY
+ACCORDING TO THE TERMS OF A SEPARATE LICENSE AGREEMENT ACCOMPANYING THE
+SOFTWARE. EXCEPT AS WARRANTED IN SUCH LICENSE AGREEMENT, TOPAZ SYSTEMS, INC.,
+DISCLAIMS ALL WARRANTIES AND CONDITIONS WITH REGARD TO THE SOFTWARE, INCLUDING
+ALL IMPLIED WARRANTIES AND CONDITIONS OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT, TO THE MAXIMUM EXTENT PERMITTED
+BY LAW.
+
+------------------------------------------------------------------------
+

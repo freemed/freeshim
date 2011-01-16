@@ -27,7 +27,11 @@ package org.freemedsoftware.device.impl;
 import gnu.io.UnsupportedCommOperationException;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Timer;
 
 import org.apache.log4j.Logger;
@@ -46,6 +50,32 @@ public class LabClinitek50Shim extends LabSerialInterface {
 	protected Integer jobId = null;
 
 	protected JobStoreItem item = null;
+
+	protected class ClinitekPacket {
+		protected boolean success;
+		protected String data;
+
+		public ClinitekPacket(boolean success, String data) {
+			setSuccess(success);
+			setData(data);
+		}
+
+		public String getData() {
+			return data;
+		}
+
+		public void setData(String data) {
+			this.data = data;
+		}
+
+		public boolean getSuccess() {
+			return success;
+		}
+
+		public void setSuccess(boolean success) {
+			this.success = success;
+		}
+	}
 
 	// Constant declarations
 	public static String ETX = "\003";
@@ -71,8 +101,10 @@ public class LabClinitek50Shim extends LabSerialInterface {
 	public static String[] KNOWN_GOOD_REVS = new String[] { "  ", "A " };
 	public static String[] KNOWN_GOOD_SW_VERS = new String[] { "01.00", "01.02" };
 	public static String[] KNOWN_STIX_TYPES = new String[] { "MULTISTIX 10 SG" };
-
-	// time_format = '%H%M'
+	public static String DATE_FORMAT = "yyMMdd";
+	public static String TIME_FORMAT = "HHmm";
+	public static DateFormat timeFormat = new SimpleDateFormat(DATE_FORMAT
+			+ TIME_FORMAT);
 
 	public LabClinitek50Shim() {
 		setConfigName("org.freemedsoftware.device.impl.LabClinitek50Shim");
@@ -136,11 +168,9 @@ public class LabClinitek50Shim extends LabSerialInterface {
 
 	protected String receivePacket() {
 		// wait for ETX which is supposed to terminate all packets
-		String packet = null;
-		packet = waitForStr(ETX, TIMEOUT, MAX_PACKET_SIZE);
-		boolean successful = true; // FIXME!!
-		if (!successful) {
-			if (packet == NAK) {
+		ClinitekPacket packet = waitForStr(ETX, TIMEOUT, MAX_PACKET_SIZE);
+		if (!packet.getSuccess()) {
+			if (packet.getData().equals(NAK)) {
 				log.info("no more data in device");
 				return "";
 			} else {
@@ -148,7 +178,7 @@ public class LabClinitek50Shim extends LabSerialInterface {
 				return null;
 			}
 		}
-		if (!verifyGenericPacketStructure(packet)) {
+		if (!verifyGenericPacketStructure(packet.getData())) {
 			// NAK packet
 			try {
 				serialInterface.write(CMD_NAK_PACKET);
@@ -157,7 +187,7 @@ public class LabClinitek50Shim extends LabSerialInterface {
 			}
 			return null;
 		}
-		return packet;
+		return packet.getData();
 	}
 
 	protected boolean verifyGenericPacketStructure(String packet) {
@@ -177,6 +207,7 @@ public class LabClinitek50Shim extends LabSerialInterface {
 		String rxd_crc = "0x"
 				+ packet.substring(packet.length() - 4, packet.length() - 2)
 						.toLowerCase();
+		// TODO: check crc
 		// crc_val = reduce(lambda x, y: x + ord(y), tuple(packet[1:-3]), 0) &
 		// 255;
 		String crc_val = "";
@@ -224,15 +255,31 @@ public class LabClinitek50Shim extends LabSerialInterface {
 					+ "] untested, trying to continue anyways");
 		}
 		// date/time
-		String timestamp = ""; // TODO: mxDT.strptime(lines[0].substring(11,21),
-		// __date_format + TIME_FORMAT)
-		log.info("device timestamp: " + timestamp);
-		// log.info("system timestamp: " + mxDT.now());
-		int age = 0; // FIXME: mxDT.Age(mxDT.now(), timestamp);
-		// if (age.hours > 6) {
-		// log.error("device time is off by " + age + ", please correct that");
-		// return false;
-		// }
+		Date nowTimestamp = new Date();
+		Date timestamp = null;
+		try {
+			timestamp = timeFormat.parse(lines[0].substring(11, 21));
+		} catch (ParseException e) {
+			log.error(e);
+		}
+		int age = 0;
+		if (timestamp != null) {
+			log.info("device timestamp: " + timestamp.toString());
+			log.info("system timestamp: " + new Date().toString());
+			long msAge = (nowTimestamp.getTime() - timestamp.getTime());
+			if (msAge != 0) {
+				age = (int) (msAge / (1000 * 60 * 60));
+			} else {
+				age = 0;
+			}
+		}
+
+		if (age > 6) {
+			log.error("device time is off by " + age
+					+ " hours, please correct that");
+			return false;
+		}
+
 		// language-unit profile
 		String[] languageUnit = lines[1].split(" - ");
 		String lang = languageUnit[0];
@@ -255,7 +302,8 @@ public class LabClinitek50Shim extends LabSerialInterface {
 		return true;
 	}
 
-	protected String waitForStr(String aString, int aTimeout, int max_bytes) {
+	protected ClinitekPacket waitForStr(String aString, int aTimeout,
+			int max_bytes) {
 		try {
 			serialInterface.getSerialPort().enableReceiveTimeout(aTimeout);
 		} catch (UnsupportedCommOperationException e) {
@@ -263,10 +311,10 @@ public class LabClinitek50Shim extends LabSerialInterface {
 		}
 
 		if (aString == null) {
-			return null;
+			return new ClinitekPacket(true, null);
 		}
 		if (aString == "") {
-			return "";
+			return new ClinitekPacket(false, "");
 		}
 
 		if (max_bytes < aString.length()) {
@@ -287,7 +335,7 @@ public class LabClinitek50Shim extends LabSerialInterface {
 				ch = serialInterface.getInputStream().read();
 			} catch (IOException e) {
 				log.error(e);
-				return rxd;
+				return new ClinitekPacket(false, rxd);
 			}
 			if (ch != -1) {
 				// get all there is
@@ -295,7 +343,7 @@ public class LabClinitek50Shim extends LabSerialInterface {
 					rxd = rxd + ch;
 					// did this contain our expected string already ?
 					if (rxd.contains(aString)) {
-						return rxd;
+						return new ClinitekPacket(true, rxd);
 					}
 
 					// did we exceed our character buffer limit ?
@@ -303,20 +351,20 @@ public class LabClinitek50Shim extends LabSerialInterface {
 					if (rxd.length() >= max_bytes) {
 						log.error("exceeded maximum # of bytes (" + max_bytes
 								+ ") to receive");
-						return rxd;
+						return new ClinitekPacket(false, rxd);
 					}
 				}
 				// nothing there, wait a slice
 			} else {
 				if (rxd.length() >= max_bytes) {
 					log.error("exceeded maximum # of bytes to receive");
-					return rxd;
+					return new ClinitekPacket(false, rxd);
 				}
 				try {
 					Thread.sleep(slice);
 				} catch (InterruptedException e) {
 					log.error(e);
-					return null;
+					return new ClinitekPacket(false, rxd);
 				}
 			}
 		}
@@ -325,6 +373,6 @@ public class LabClinitek50Shim extends LabSerialInterface {
 		log.warn("wait for [" + aString + "] timed out after " + aTimeout
 				+ " ms");
 		log.debug(rxd);
-		return rxd; // (0, rxd)
+		return new ClinitekPacket(false, rxd);
 	}
 }

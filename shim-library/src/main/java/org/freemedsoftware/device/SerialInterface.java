@@ -121,4 +121,17 @@ public class SerialInterface {
 		} catch (IOException ex) {
 		}
 	}
+
+	public InputStream getInputStream() {
+		return in;
+	}
+
+	public OutputStream getOutputStream() {
+		return out;
+	}
+
+	public SerialPort getSerialPort() {
+		return serialPort;
+	}
+
 }

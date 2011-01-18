@@ -74,6 +74,13 @@
 		</dependency>
 		<dependency>
 			<groupId>org.freemedsoftware</groupId>
+			<artifactId>shim-driver-lab-microlab3500</artifactId>
+			<version>${version}</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.freemedsoftware</groupId>
 			<artifactId>shim-driver-dosing-scilog</artifactId>
 			<version>${version}</version>
 			<type>jar</type>

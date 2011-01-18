@@ -10,6 +10,7 @@
   <packaging>pom</packaging>
   <modules>
     <module>shim-driver-lab-clinitek50</module>
+    <module>shim-driver-lab-microlab3500</module>
     <module>shim-driver-label-escpos</module>
     <module>shim-driver-signature-dummy</module>
     <module>shim-driver-signature-topaz</module>

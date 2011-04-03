@@ -21,7 +21,7 @@
   SetCompressor /SOLID lzma
 
   Name "FreeSHIM"
-  !define VERSION 0.1.0.1
+  !define VERSION 0.1.1.2
 
   ;Product information
   VIAddVersionKey ProductName "FreeSHIM"
@@ -29,11 +29,11 @@
   VIAddVersionKey LegalCopyright "Copyright (c) 1999-2011 FreeMED Software Foundation"
   VIAddVersionKey FileDescription "FreeSHIM Installer"
   VIAddVersionKey FileVersion "1.0"
-  VIAddVersionKey ProductVersion "0.1"
+  VIAddVersionKey ProductVersion "0.1.1"
   VIAddVersionKey Comments "freeshim.org"
-  VIAddVersionKey InternalName "freeshim-0.1-win32.exe"
+  VIAddVersionKey InternalName "freeshim-0.1.1.2-win32.exe"
   VIProductVersion ${VERSION}
-  !define TOMCAT_VERSION 6.0.29
+  !define TOMCAT_VERSION 6.0.32
 
 !include "MUI.nsh"
 !include "StrFunc.nsh"

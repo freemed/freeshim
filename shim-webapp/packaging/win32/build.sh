@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TOMCAT_VERSION=6.0.29
+TOMCAT_VERSION=6.0.32
 P="$( cd "$(dirname "$0")"; pwd )"
 
 cd "$P"

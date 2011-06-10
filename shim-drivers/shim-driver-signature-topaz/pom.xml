@@ -19,7 +19,7 @@
 		<dependency>
 			<groupId>org.freemedsoftware</groupId>
 			<artifactId>shim-library</artifactId>
-			<version>0.1</version>
+			<version>${version}</version>
 		</dependency>
 
 		<dependency>
@@ -56,7 +56,7 @@
 		<dependency>
 			<groupId>org.tmatesoft.sqljet</groupId>
 			<artifactId>sqljet</artifactId>
-			<version>1.0.3</version>
+			<version>1.0.4</version>
 			<scope>compile</scope>
 		</dependency>
 

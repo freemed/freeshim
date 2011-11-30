@@ -7,7 +7,7 @@
 # Build a Debian "free" version of FreeSHIM.
 
 echo "Building changelog ... "
-git log > ChangeLog
+./git2cl > ChangeLog
 
 echo "Exporting from Subversion ... "
 git archive --remote git://github.com/freemed/freeshim.git master | tar -x -C BUILD

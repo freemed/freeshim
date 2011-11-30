@@ -42,7 +42,8 @@
 			<artifactId>commapi</artifactId>
 			<version>2.0.3</version>
 			<type>jar</type>
-			<scope>compile</scope>
+			<scope>system</scope>
+			<systemPath>${basedir}/deps/commapi-2.0.3.jar</systemPath>
 		</dependency>
 
 		<dependency>
@@ -50,7 +51,8 @@
 			<artifactId>sigplus</artifactId>
 			<version>2.52</version>
 			<type>jar</type>
-			<scope>compile</scope>
+			<scope>system</scope>
+			<systemPath>${basedir}/deps/sigplus-2.52.jar</systemPath>
 		</dependency>
 
 		<dependency>

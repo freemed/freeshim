@@ -52,7 +52,8 @@
 			<artifactId>rxtx</artifactId>
 			<version>2.2pre2</version>
 			<type>jar</type>
-			<scope>compile</scope>
+			<scope>system</scope>
+			<systemPath>${basedir}/deps/rxtx-2.2pre2.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>org.tmatesoft.sqljet</groupId>

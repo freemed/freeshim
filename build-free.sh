@@ -7,10 +7,10 @@
 # Build a Debian "free" version of FreeSHIM.
 
 echo "Building changelog ... "
-./svn2cl.sh
+git log > ChangeLog
 
 echo "Exporting from Subversion ... "
-svn export https://svn.master.freemedsoftware.org/freemed-utilities/shim/trunk BUILD
+git archive --remote git://github.com/freemed/freeshim.git master | tar -x -C BUILD
 
 echo "Removing non-free component(s) ... "
 xsltproc remove-nonfree.xsl BUILD/shim-webapp/pom.xml > BUILD/shim-webapp/pom.xml.tmp

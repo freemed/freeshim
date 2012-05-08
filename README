@@ -28,7 +28,7 @@ CONFIGURATION
 1) FreeSHIM uses a set of defaults which are included with it. These
    are viewable here (with documentation, of course):
 
-   http://svn.freemedsoftware.org/freemed-utilities/shim/trunk/shim-webapp/src/main/webapp/WEB-INF/shim-default.properties
+   https://github.com/freemed/freeshim/blob/master/shim-webapp/src/main/webapp/WEB-INF/shim-default.properties
 
 2) To override these, pass:
 

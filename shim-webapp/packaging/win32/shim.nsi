@@ -26,7 +26,7 @@
   ;Product information
   VIAddVersionKey ProductName "FreeSHIM"
   VIAddVersionKey CompanyName "FreeMED Software Foundation"
-  VIAddVersionKey LegalCopyright "Copyright (c) 1999-2011 FreeMED Software Foundation"
+  VIAddVersionKey LegalCopyright "Copyright (c) 1999-2012 FreeMED Software Foundation"
   VIAddVersionKey FileDescription "FreeSHIM Installer"
   VIAddVersionKey FileVersion "1.0"
   VIAddVersionKey ProductVersion "0.1.1"

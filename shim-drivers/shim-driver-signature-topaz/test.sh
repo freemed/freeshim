@@ -27,5 +27,5 @@ P="$( cd "$(dirname "$0")" ; pwd )"
 JDK_LOCATION="/usr/lib/jvm/jdk1.6.0_21"
 JNI_PLATFORM=i686-unknown-linux-gnu
 
-${JDK_LOCATION}/jre/bin/java -Djava.library.path=native/${JNI_PLATFORM} -cp $P/target/classes:$P/../../shim-library/target/classes:$P/deps/commapi-2.0.3.jar:$P/deps/sigplus-2.52.jar:${HOME}/.m2/repository/log4j/log4j/1.2.16/log4j-1.2.16.jar:${HOME}/.m2/repository/org/tmatesoft/sqljet/sqljet/1.0.3/sqljet-1.0.3.jar org.freemedsoftware.device.impl.SignatureTopazShim
+${JDK_LOCATION}/jre/bin/java -Djava.library.path=native/${JNI_PLATFORM} -cp $P/target/classes:$P/../../shim-library/target/classes:$P/deps/commapi-2.0.3.jar:$P/deps/sigplus-2.60:${HOME}/.m2/repository/log4j/log4j/1.2.16/log4j-1.2.16.jar:${HOME}/.m2/repository/org/tmatesoft/sqljet/sqljet/1.0.3/sqljet-1.0.3.jar org.freemedsoftware.device.impl.SignatureTopazShim
 

@@ -1,8 +1,6 @@
 FreeSHIM Opensource Multiplatform Medical Device Interface
-       (c) 2011 by the FreeMED Software Foundation
+     (c) 2011-2012 by the FreeMED Software Foundation
 ==========================================================
-
-( $Id$ )
 
 INSTALLATION
 ============
@@ -13,7 +11,8 @@ INSTALLATION
 
 2) If you need to use any of the "native libraries" for any of the 
    device drivers, follow their respective README files for instructions
-   on how to install their JNI libraries.
+   on how to install their JNI libraries. (If there are any.) Maven
+   *should* handle this for you.
 
 3) If you're using a serial port, you may have to run "setserial" on it,
    or even bake that into your /etc/rc.local file to run on boot, otherwise
@@ -43,15 +42,11 @@ COMPILATION
 
 1) Install Maven 2 and JDK 1.6 on your system.
 
-2) Install native dependencies for the drivers. Programmatically:
-
-   find . | grep -v svn | grep install-deps | while read X; do ( cd "$(dirname "$X")"; ./install-deps.sh ); done
-
-3) Ask Maven to package the system:
+2) Ask Maven to package the system:
 
    mvn package
 
-4) Voila! You should see the "shim.war" package in shim-webapps/target/
+3) Voila! You should see the "shim.war" package in shim-webapps/target/
 
 
 CAVEATS

@@ -23,8 +23,7 @@
 ## CONFIGURATION
 
 * FreeSHIM uses a set of defaults which are included with it. These
-  are viewable here (with documentation, of course):
-  ```https://github.com/freemed/freeshim/blob/master/shim-webapp/src/main/webapp/WEB-INF/shim-default.properties```
+  are viewable here (with documentation, of course): https://github.com/freemed/freeshim/blob/master/shim-webapp/src/main/webapp/WEB-INF/shim-default.properties
 *  To override these, pass ```-Dshim.properties=/path/to/your/shim.properties``` to your J2EE container.
 
 ## COMPILATION

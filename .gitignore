@@ -1,0 +1,4 @@
+shim-drivers/*/target
+shim-library/target
+shim-webapp/target
+shim-*-dist.*

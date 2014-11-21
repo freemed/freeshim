@@ -1,6 +1,6 @@
 # FreeSHIM Opensource Multiplatform Medical Device Interface
 
-* (c) 2011-2012 by the FreeMED Software Foundation
+* (c) 2011-2014 by the FreeMED Software Foundation
 
 ## INSTALLATION
 
@@ -29,9 +29,8 @@
 ## COMPILATION
 
 * Install Maven 2 and JDK 1.6 on your system.
-* Ask Maven to package the system: ```mvn package```
-* Voila! You should see the "shim.war" package in
-  ```shim-webapps/target/```
+* Ask Maven to package the system: `mvn package`
+* Voila! You should see the "shim.war" package in `shim-webapps/target/`
 
 ## CAVEATS
 
